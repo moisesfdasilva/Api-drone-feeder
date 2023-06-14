@@ -1,8 +1,9 @@
 package com.futureh.drone.feeder.controller;
 
 import com.futureh.drone.feeder.response.FileUploadResponse;
-import com.futureh.drone.feeder.util.FileUploadUtil;
+import com.futureh.drone.feeder.service.FileUploadService;
 import java.io.IOException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,9 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/drone")
 public class FileUploadController {
 
+  @Autowired
+  private FileUploadService fileUploadService;
+
   /**
    * UploadFile method.
    */
@@ -28,7 +32,7 @@ public class FileUploadController {
     String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
     Long size = multipartFile.getSize();
 
-    String completeFileName = FileUploadUtil.saveFile(fileName, multipartFile);
+    String completeFileName = fileUploadService.saveFile(fileName, multipartFile);
 
     FileUploadResponse response = new FileUploadResponse();
     response.setFileName(fileName);
