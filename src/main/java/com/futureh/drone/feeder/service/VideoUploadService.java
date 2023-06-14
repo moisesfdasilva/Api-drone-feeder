@@ -13,14 +13,14 @@ import org.springframework.web.multipart.MultipartFile;
  * FileUploadUtil class.
  */
 @Service
-public class FileUploadService {
+public class VideoUploadService {
 
   /**
    * SaveFile method.
    */
   public String saveFile(String fileName, MultipartFile multipartFile) throws IOException {
     Path uploadDirectory = Paths.get("videos-uploads");
-    String completeFileName = "/drone/downloadfile/" + fileName;
+    String completeFileName = "/drone/downloadVideo/" + fileName;
 
     try {
       InputStream inputStream = multipartFile.getInputStream();

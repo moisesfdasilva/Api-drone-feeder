@@ -8,7 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import com.futureh.drone.feeder.service.FileUploadService;
+import com.futureh.drone.feeder.service.VideoUploadService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ import org.springframework.test.web.servlet.MockMvc;
 class UploadTests {
 
   @MockBean
-  private FileUploadService fileUploadService;
+  private VideoUploadService videoUploadService;
 
   @Autowired
   private MockMvc mockMvc;
@@ -34,15 +34,15 @@ class UploadTests {
       + " contendo o fileName, size e downloadUri.")
   void uploadWithVideoOk() throws Exception {
     String fileName = "DRON-yyyy-MM-dd-HHmmss.mp4";
-    String doanloadUri = "/drone/downloadfile/" + fileName;
+    String doanloadUri = "/drone/downloadVideo/" + fileName;
 
     MockMultipartFile multipartFile = new MockMultipartFile("video", fileName, "video.mp4",
         "New drone video".getBytes());
 
-    when(fileUploadService.saveFile(fileName, multipartFile)).thenReturn(doanloadUri);
+    when(videoUploadService.saveFile(fileName, multipartFile)).thenReturn(doanloadUri);
 
     this.mockMvc.perform(
-        multipart("/drone/uploadfile").file(multipartFile)
+        multipart("/drone/uploadVideo").file(multipartFile)
     ).andExpect(status().isOk())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
     .andExpect(jsonPath("$.fileName", is(fileName)))
@@ -57,7 +57,7 @@ class UploadTests {
         "video.mp4", "new drone video".getBytes());
 
     this.mockMvc.perform(
-        multipart("/drone/uploadfile").file(multipartFile)
+        multipart("/drone/uploadVideo").file(multipartFile)
     ).andExpect(status().isBadRequest());
   }
 
