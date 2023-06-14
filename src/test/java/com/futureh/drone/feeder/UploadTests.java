@@ -2,6 +2,7 @@ package com.futureh.drone.feeder;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,17 +33,21 @@ class UploadTests {
   @DisplayName("1. Deve adicionar o vídeo de entrega do drone e retornar status 200 com o body"
       + " contendo o fileName, size e downloadUri.")
   void uploadWithVideoOk() throws Exception {
-    
-    MockMultipartFile multipartFile = new MockMultipartFile("video", "yyyy-MM-dd-HH-mm.mp4",
-        "video.mp4", "New drone video".getBytes());
+    String fileName = "DRON-yyyy-MM-dd-HHmmss.mp4";
+    String doanloadUri = "/drone/downloadfile/" + fileName;
+
+    MockMultipartFile multipartFile = new MockMultipartFile("video", fileName, "video.mp4",
+        "New drone video".getBytes());
+
+    when(fileUploadService.saveFile(fileName, multipartFile)).thenReturn(doanloadUri);
 
     this.mockMvc.perform(
         multipart("/drone/uploadfile").file(multipartFile)
     ).andExpect(status().isOk())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-    .andExpect(jsonPath("$.fileName", is("yyyy-MM-dd-HH-mm.mp4")))
+    .andExpect(jsonPath("$.fileName", is(fileName)))
     .andExpect(jsonPath("$.size", is(15)))
-    .andExpect(jsonPath("$.downloadUri", containsString("/drone/downloadfile/")));
+    .andExpect(jsonPath("$.downloadUri", containsString(doanloadUri)));
   }
 
   @Test

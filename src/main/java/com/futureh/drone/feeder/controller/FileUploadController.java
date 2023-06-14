@@ -37,7 +37,7 @@ public class FileUploadController {
     FileUploadResponse response = new FileUploadResponse();
     response.setFileName(fileName);
     response.setSize(size);
-    response.setDownloadUri("/drone/downloadfile/" + completeFileName);
+    response.setDownloadUri(completeFileName);
 
     return ResponseEntity.ok(response);
   }

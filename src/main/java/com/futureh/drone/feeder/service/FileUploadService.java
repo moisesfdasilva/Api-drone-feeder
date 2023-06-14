@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,18 +20,17 @@ public class FileUploadService {
    */
   public String saveFile(String fileName, MultipartFile multipartFile) throws IOException {
     Path uploadDirectory = Paths.get("videos-uploads");
-    String fileCode = RandomStringUtils.randomAlphanumeric(5);
+    String completeFileName = "/drone/downloadfile/" + fileName;
 
     try {
       InputStream inputStream = multipartFile.getInputStream();
-      Path filePath = uploadDirectory
-          .resolve(fileName.replace(".mp4", "") + "_" + fileCode + ".mp4");
+      Path filePath = uploadDirectory.resolve(fileName);
       Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
     } catch (IOException err) {
       throw new IOException("Error: IOException.", err);
     }
 
-    return fileCode;
+    return completeFileName;
   }
 
 }
