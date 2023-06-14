@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * Drone FileUploadController class.
+ * Drone VideoUploadController class.
  */
 @RestController
 @RequestMapping("/drone")
@@ -32,12 +32,12 @@ public class VideoUploadController {
     String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
     Long size = multipartFile.getSize();
 
-    String completeFileName = videoUploadService.saveFile(fileName, multipartFile);
+    String videoUri = videoUploadService.saveFile(fileName, multipartFile);
 
     FileUploadResponse response = new FileUploadResponse();
     response.setFileName(fileName);
     response.setSize(size);
-    response.setDownloadUri(completeFileName);
+    response.setDownloadUri(videoUri);
 
     return ResponseEntity.ok(response);
   }

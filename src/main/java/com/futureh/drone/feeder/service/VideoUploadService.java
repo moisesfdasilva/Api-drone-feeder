@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * FileUploadUtil class.
+ * VideoUploadService class.
  */
 @Service
 public class VideoUploadService {
@@ -20,7 +20,7 @@ public class VideoUploadService {
    */
   public String saveFile(String fileName, MultipartFile multipartFile) throws IOException {
     Path uploadDirectory = Paths.get("videos-uploads");
-    String completeFileName = "/drone/downloadVideo/" + fileName;
+    String uri = "/drone/downloadVideo/" + fileName;
 
     try {
       InputStream inputStream = multipartFile.getInputStream();
@@ -30,7 +30,7 @@ public class VideoUploadService {
       throw new IOException("Error: IOException.", err);
     }
 
-    return completeFileName;
+    return uri;
   }
 
 }

@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class UploadTests {
+class VideoUploadControllerTests {
 
   @MockBean
   private VideoUploadService videoUploadService;
@@ -32,7 +32,7 @@ class UploadTests {
   @Test
   @DisplayName("1. Deve adicionar o vídeo de entrega do drone e retornar status 200 com o body"
       + " contendo o fileName, size e downloadUri.")
-  void uploadWithVideoOk() throws Exception {
+  public void uploadWithVideoOk() throws Exception {
     String fileName = "DRON-yyyy-MM-dd-HHmmss.mp4";
     String doanloadUri = "/drone/downloadVideo/" + fileName;
 
@@ -52,7 +52,7 @@ class UploadTests {
 
   @Test
   @DisplayName("2. Deve retornar status 400 se não houver video na requisição.")
-  void uploadWithoutVideo() throws Exception {
+  public void uploadWithoutVideo() throws Exception {
     MockMultipartFile multipartFile = new MockMultipartFile("not video", "someone file",
         "video.mp4", "new drone video".getBytes());
 
