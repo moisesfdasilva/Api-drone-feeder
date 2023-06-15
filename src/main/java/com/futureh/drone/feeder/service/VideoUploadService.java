@@ -1,5 +1,6 @@
 package com.futureh.drone.feeder.service;
 
+import com.futureh.drone.feeder.exception.InputFileException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -27,7 +28,7 @@ public class VideoUploadService {
       Path filePath = uploadDirectory.resolve(fileName);
       Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
     } catch (IOException err) {
-      throw new IOException("Error: IOException.", err);
+      throw new InputFileException();
     }
 
     return uri;
