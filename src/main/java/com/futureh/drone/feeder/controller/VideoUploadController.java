@@ -1,5 +1,6 @@
 package com.futureh.drone.feeder.controller;
 
+import com.futureh.drone.feeder.middleware.VideoNameMiddleware;
 import com.futureh.drone.feeder.response.FileUploadResponse;
 import com.futureh.drone.feeder.service.VideoUploadService;
 import java.io.IOException;
@@ -30,6 +31,8 @@ public class VideoUploadController {
       @RequestParam("video") MultipartFile multipartFile) throws IOException {
 
     String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+    VideoNameMiddleware.isValidName(fileName);
+
     Long size = multipartFile.getSize();
 
     String videoUri = videoUploadService.saveFile(fileName, multipartFile);

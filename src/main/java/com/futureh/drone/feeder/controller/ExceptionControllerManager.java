@@ -16,20 +16,20 @@ public class ExceptionControllerManager {
 
   /** Método que recebe a exceção ?.*/
   @ExceptionHandler(MissingServletRequestPartException.class)
-  public ResponseEntity<HashMap<String, String>> handleIoException(
+  public ResponseEntity<HashMap<String, String>> handleInputNameException(
       MissingServletRequestPartException exception) {
-    HashMap<String, String> mensagem = new HashMap<String, String>();
-    mensagem.put("error", exception.getMessage());
-    return ResponseEntity.status(HttpStatus.CONFLICT).body(mensagem);
+    HashMap<String, String> message = new HashMap<String, String>();
+    message.put("error", exception.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
   }
 
   /** Método que recebe a exceção ?.*/
   @ExceptionHandler(InputFileException.class)
-  public ResponseEntity<HashMap<String, String>> handleInputNameException(
+  public ResponseEntity<HashMap<String, String>> handleInputFileException(
       InputFileException exception) {
-    HashMap<String, String> mensagem = new HashMap<String, String>();
-    mensagem.put("error", exception.getMessage());
-    return ResponseEntity.status(HttpStatus.CONFLICT).body(mensagem);
+    HashMap<String, String> message = new HashMap<String, String>();
+    message.put("error", exception.getMessage());
+    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
   }
 
 }
