@@ -58,7 +58,64 @@ class VideoUploadControllerTests {
 
     this.mockMvc.perform(
         multipart("/drone/uploadVideo").file(multipartFile)
-    ).andExpect(status().isBadRequest());
+    ).andExpect(status().isBadRequest())
+    .andExpect(jsonPath("$.error", is("Required request part 'video' is not present")));
+  }
+
+  @Test
+  @DisplayName("3. Deve retornar status 400 se ...")
+  public void uploadContainVideoNameWithInvalidLength() throws Exception {
+    String fileName = "DRON--2022-05-30-101010.mp4";
+
+    MockMultipartFile multipartFile = new MockMultipartFile("video", fileName, "video.mp4",
+        "New drone video".getBytes());
+
+    this.mockMvc.perform(
+        multipart("/drone/uploadVideo").file(multipartFile)
+    ).andExpect(status().isBadRequest())
+    .andExpect(jsonPath("$.error", containsString("The video name length isn't 26 characters.")));
+  }
+
+  @Test
+  @DisplayName("4. Deve retornar status 400 se ...")
+  public void uploadContainVideoNameWithInvalidDroneName() throws Exception {
+    String fileName = "????-2022-05-30-101010.mp4";
+
+    MockMultipartFile multipartFile = new MockMultipartFile("video", fileName, "video.mp4",
+        "New drone video".getBytes());
+
+    this.mockMvc.perform(
+        multipart("/drone/uploadVideo").file(multipartFile)
+    ).andExpect(status().isBadRequest())
+    .andExpect(jsonPath("$.error", containsString("The default drone name isn't correct.")));
+  }
+
+  @Test
+  @DisplayName("5. Deve retornar status 400 se ...")
+  public void uploadContainVideoNameWithInvalidFormat() throws Exception {
+    String fileName = "DRON-2022-05-30-101010.avi";
+
+    MockMultipartFile multipartFile = new MockMultipartFile("video", fileName, "video.mp4",
+        "New drone video".getBytes());
+
+    this.mockMvc.perform(
+        multipart("/drone/uploadVideo").file(multipartFile)
+    ).andExpect(status().isBadRequest())
+    .andExpect(jsonPath("$.error", containsString("The video format isn't correct.")));
+  }
+
+  @Test
+  @DisplayName("6. Deve retornar status 400 se ...")
+  public void uploadContainVideoNameWithInvalidDate() throws Exception {
+    String fileName = "DRON-2022-30-30-101010.mp4";
+
+    MockMultipartFile multipartFile = new MockMultipartFile("video", fileName, "video.mp4",
+        "New drone video".getBytes());
+
+    this.mockMvc.perform(
+        multipart("/drone/uploadVideo").file(multipartFile)
+    ).andExpect(status().isBadRequest())
+    .andExpect(jsonPath("$.error", containsString("The delivery date-time isn't correct.")));
   }
 
 }

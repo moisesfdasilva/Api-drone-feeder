@@ -31,7 +31,7 @@ public class VideoNameMiddleware {
 
     String format = fileName.substring(fileName.length() - 4, fileName.length());
     if (!format.equals(".mp4")) {
-      throw new InputVideoNameException("The default drone name isn't correct."
+      throw new InputVideoNameException("The video format isn't correct."
           + " Must be used the standard name (DRON-yyyy-MM-dd-HHmmss.mp4).");
     }
 
