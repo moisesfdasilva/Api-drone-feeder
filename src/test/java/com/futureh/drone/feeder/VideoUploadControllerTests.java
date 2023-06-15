@@ -33,7 +33,7 @@ class VideoUploadControllerTests {
   @DisplayName("1. Deve adicionar o vídeo de entrega do drone e retornar status 200 com o body"
       + " contendo o fileName, size e downloadUri.")
   public void uploadWithVideoOk() throws Exception {
-    String fileName = "DRON-yyyy-MM-dd-HHmmss.mp4";
+    String fileName = "DRON-2022-05-30-101010.mp4";
     String doanloadUri = "/drone/downloadVideo/" + fileName;
 
     MockMultipartFile multipartFile = new MockMultipartFile("video", fileName, "video.mp4",
@@ -51,7 +51,7 @@ class VideoUploadControllerTests {
   }
 
   @Test
-  @DisplayName("2. Deve retornar status 400 se não houver video na requisição.")
+  @DisplayName("2. Deve retornar status 400 se não houver form-data vídeo no body da requisição.")
   public void uploadWithoutVideo() throws Exception {
     MockMultipartFile multipartFile = new MockMultipartFile("not video", "someone file",
         "video.mp4", "new drone video".getBytes());

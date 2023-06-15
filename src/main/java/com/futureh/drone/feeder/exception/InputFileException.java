@@ -1,7 +1,7 @@
 package com.futureh.drone.feeder.exception;
 
 /**
- * InputNameException class.
+ * InputFileException class.
  */
 public class InputFileException extends RuntimeException {
 
