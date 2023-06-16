@@ -1,8 +1,11 @@
 package com.futureh.drone.feeder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.futureh.drone.feeder.exception.InputFileException;
 import com.futureh.drone.feeder.service.VideoUploadService;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
@@ -22,9 +25,9 @@ class VideoUploadServiceTests {
   private VideoUploadService videoUploadService;
 
   @Test
-  @DisplayName("1. Salva o vídeo enviado no diretório videos-upload.")
+  @DisplayName("1. Verifica se o vídeo é salvo no diretório videos-upload.")
   public void uploadWithVideoOk() throws Exception {
-    String fileName = "DRON-yyyy-MM-dd-HHmmss.mp4";
+    String fileName = "DRON-2022-05-30-101010.mp4";
     String doanloadUri = "/drone/downloadVideo/" + fileName;
 
     MockMultipartFile multipartFile = new MockMultipartFile("video", fileName, "video.mp4",
@@ -38,7 +41,22 @@ class VideoUploadServiceTests {
 
       assertEquals(videoUri, doanloadUri);
     }
+  }
 
+  @Test
+  @DisplayName("2. Verifica ocorre erro quando não há nome no vídeo.")
+  public void uploadWithoutVideo() throws Exception {
+    String fileName = "";
+
+    MockMultipartFile multipartFile = new MockMultipartFile("video", fileName, "video.mp4",
+        "New drone video".getBytes());
+
+    try (MockedStatic<Files> utilities = Mockito.mockStatic(Files.class)) {
+      utilities.when(() -> Files.copy(Mockito.any(InputStream.class), Mockito.any(Path.class),
+          Mockito.any(CopyOption.class))).thenThrow(IOException.class);
+      assertThrows(InputFileException.class,
+          () -> videoUploadService.saveFile(fileName, multipartFile));
+    }
   }
 
 }
