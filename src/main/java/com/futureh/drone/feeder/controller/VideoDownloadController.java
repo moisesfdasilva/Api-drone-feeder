@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class VideoDownloadController {
 
   @Autowired
-  VideoDownloadService videoDownloadService;
+  private VideoDownloadService videoDownloadService;
 
   /**
-   * DownloadFile method.
+   * DownloadVideo method.
    */
   @GetMapping("/downloadVideo/{videoName}")
-  public ResponseEntity<?> downloadFile(@PathVariable("videoName") String videoName) {
+  public ResponseEntity<?> downloadVideo(@PathVariable("videoName") String videoName) {
     Resource resource = null;
     try {
       resource = videoDownloadService.getVideoAsResource(videoName);
@@ -40,7 +40,7 @@ public class VideoDownloadController {
     }
 
     String contentType = "application/octet-stream";
-    String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
+    String headerValue = "attachment; fileName=\"" + resource.getFilename() + "\"";
 
     return ResponseEntity.ok()
         .contentType(MediaType.parseMediaType(contentType))
