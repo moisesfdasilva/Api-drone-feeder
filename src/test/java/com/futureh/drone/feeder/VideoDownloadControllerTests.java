@@ -1,13 +1,16 @@
 package com.futureh.drone.feeder;
 
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.futureh.drone.feeder.mock.VideoDownloadControllerMock;
 import com.futureh.drone.feeder.service.VideoDownloadService;
+import java.io.IOException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,9 +32,9 @@ class VideoDownloadControllerTests {
   private MockMvc mockMvc;
 
   @Test
-  @DisplayName("1. Verifica quando inserido o vídeo com nome no padrão DRON-yyyy-MM-dd-HHmmss.mp4, "
-      + "existente na galeria, deve retornar o vídeo de entrega do drone com status 200.")
-  public void uploadWithVideoOk() throws Exception {
+  @DisplayName("1. Verifica quando inserido um vídeo com nome existente na galeria, "
+      + "deve retornar o vídeo de entrega do drone com status 200.")
+  public void downloadWithVideoNameOk() throws Exception {
     String fileName = "DRON-2022-05-30-101010.mp4";
     
     Resource videoResource = VideoDownloadControllerMock.getMockedResource(fileName);
@@ -39,14 +42,41 @@ class VideoDownloadControllerTests {
     when(videoDownloadService.getVideoAsResource(fileName)).thenReturn(videoResource);
 
     this.mockMvc.perform(
-        get("/drone/downloadVideo/DRON-2022-05-30-101010.mp4")
+        get("/drone/downloadVideo/" + fileName)
     ).andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION,
             "attachment; fileName=\"" + videoResource.getFilename() + "\""))
         .andExpect(content().bytes(fileName.getBytes()));
   }
-  //  VERIFICAR AS FALHAS:
-  // 1. Input inválido; e
-  // 2. Vídeo inexistente.
+
+  @Test
+  @DisplayName("2. Verifica quando inserido um vídeo com nome inexistente na galeria, "
+      + "deve retornar uma mensagem de erro com o status 404.")
+  public void downloadWithVideoNameNotFound() throws Exception {
+    String fileName = "DRON-1989-05-30-101010.mp4";
+    String errorMessage = "Video not found."
+        + " Try to use the standard video name (DRON-yyyy-MM-dd-HHmmss.mp4).";
+
+    when(videoDownloadService.getVideoAsResource(fileName)).thenReturn(null);
+
+    this.mockMvc.perform(
+        get("/drone/downloadVideo/" + fileName)
+    ).andExpect(status().isNotFound())
+    .andExpect(jsonPath("$.error", is(errorMessage)));
+  }
+
+  @Test
+  @DisplayName("3. Verifica quando há um erro interno deve retornar uma mensagem de erro com o "
+      + "status 500.")
+  public void downloadWithInternalServerError() throws Exception {
+    String fileName = "DRON-2022-05-30-101010.mp4";
+
+    when(videoDownloadService.getVideoAsResource(fileName)).thenThrow(IOException.class);
+
+    this.mockMvc.perform(
+        get("/drone/downloadVideo/" + fileName)
+    ).andExpect(status().isInternalServerError())
+    .andExpect(jsonPath("$.error", is("Internal server error in video finding.")));
+  }
 
 }

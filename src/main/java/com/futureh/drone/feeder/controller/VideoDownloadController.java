@@ -1,5 +1,6 @@
 package com.futureh.drone.feeder.controller;
 
+import com.futureh.drone.feeder.exception.IntServerErrorInVideoFinding;
 import com.futureh.drone.feeder.exception.VideoNotFoundException;
 import com.futureh.drone.feeder.service.VideoDownloadService;
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class VideoDownloadController {
     try {
       resource = videoDownloadService.getVideoAsResource(videoName);
     } catch (IOException e) {
-      return ResponseEntity.internalServerError().build();
+      throw new IntServerErrorInVideoFinding();
     }
 
     if (resource == null) {
