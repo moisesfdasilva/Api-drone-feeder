@@ -23,7 +23,7 @@ public class VideoDownloadService {
     Path uploadDirectory = Paths.get("videos-uploads");
 
     Files.list(uploadDirectory).forEach(video -> {
-      boolean existsVideo = video.getFileName().toString().contains(videoName);
+      boolean existsVideo = video.getFileName().toString().equals(videoName);
       if (existsVideo) {
         foundVideo = video;
         return;

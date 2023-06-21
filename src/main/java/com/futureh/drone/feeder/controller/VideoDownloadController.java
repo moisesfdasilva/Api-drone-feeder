@@ -1,11 +1,11 @@
 package com.futureh.drone.feeder.controller;
 
+import com.futureh.drone.feeder.exception.VideoNotFoundException;
 import com.futureh.drone.feeder.service.VideoDownloadService;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,7 +36,7 @@ public class VideoDownloadController {
     }
 
     if (resource == null) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND).body("File not found");
+      throw new VideoNotFoundException();
     }
 
     String contentType = "application/octet-stream";

@@ -56,7 +56,7 @@ public class VideoDownloadControllerMock {
 
       @Override
       public String getFilename() {
-        return "DRON-2022-05-30-101010.mp4";
+        return fileName;
       }
 
       @Override

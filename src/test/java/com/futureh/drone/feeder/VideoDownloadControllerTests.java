@@ -45,5 +45,8 @@ class VideoDownloadControllerTests {
             "attachment; fileName=\"" + videoResource.getFilename() + "\""))
         .andExpect(content().bytes(fileName.getBytes()));
   }
+  //  VERIFICAR AS FALHAS:
+  // 1. Input inválido; e
+  // 2. Vídeo inexistente.
 
 }

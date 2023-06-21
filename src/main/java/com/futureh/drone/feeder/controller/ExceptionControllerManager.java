@@ -2,6 +2,7 @@ package com.futureh.drone.feeder.controller;
 
 import com.futureh.drone.feeder.exception.InputFileException;
 import com.futureh.drone.feeder.exception.InputVideoNameException;
+import com.futureh.drone.feeder.exception.VideoNotFoundException;
 import java.util.HashMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,15 @@ public class ExceptionControllerManager {
     HashMap<String, String> message = new HashMap<String, String>();
     message.put("error", exception.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
+  }
+
+  /** HandleVideoNotFoundException method.*/
+  @ExceptionHandler(VideoNotFoundException.class)
+  public ResponseEntity<HashMap<String, String>> handleVideoNotFoundException(
+      VideoNotFoundException exception) {
+    HashMap<String, String> message = new HashMap<String, String>();
+    message.put("error", exception.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
   }
 
 }
