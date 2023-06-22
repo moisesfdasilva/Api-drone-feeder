@@ -21,7 +21,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class VideoUploadControllerTests {
+class VideoUploadControllerTest {
 
   @MockBean
   private VideoUploadService videoUploadService;

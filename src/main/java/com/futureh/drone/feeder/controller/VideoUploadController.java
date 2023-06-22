@@ -24,10 +24,10 @@ public class VideoUploadController {
   private VideoUploadService videoUploadService;
 
   /**
-   * UploadFile method.
+   * UploadVideo method.
    */
   @PostMapping("/uploadVideo")
-  public ResponseEntity<FileUploadResponse> uploadFile(
+  public ResponseEntity<FileUploadResponse> uploadVideo(
       @RequestParam("video") MultipartFile multipartFile) throws IOException {
 
     String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
