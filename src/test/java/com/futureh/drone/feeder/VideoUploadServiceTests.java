@@ -25,7 +25,7 @@ class VideoUploadServiceTests {
   private VideoUploadService videoUploadService;
 
   @Test
-  @DisplayName("1. Verifica se o vídeo é salvo no diretório videos-upload.")
+  @DisplayName("1. Verifica se um vídeo válido é salvo no diretório videos-upload.")
   public void uploadWithVideoOk() throws Exception {
     String fileName = "DRON-2022-05-30-101010.mp4";
     String doanloadUri = "/drone/downloadVideo/" + fileName;

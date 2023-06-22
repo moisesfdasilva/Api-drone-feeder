@@ -36,7 +36,7 @@ class VideoDownloadControllerTests {
       + "deve retornar o vídeo de entrega do drone com status 200.")
   public void downloadWithVideoNameOk() throws Exception {
     String fileName = "DRON-2022-05-30-101010.mp4";
-    
+
     Resource videoResource = VideoDownloadControllerMock.getMockedResource(fileName);
 
     when(videoDownloadService.getVideoAsResource(fileName)).thenReturn(videoResource);
