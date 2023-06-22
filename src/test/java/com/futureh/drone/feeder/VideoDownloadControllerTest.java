@@ -23,7 +23,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class VideoDownloadControllerTests {
+class VideoDownloadControllerTest {
 
   @MockBean
   private VideoDownloadService videoDownloadService;

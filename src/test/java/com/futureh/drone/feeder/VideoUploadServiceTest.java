@@ -19,7 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
 
 @SpringBootTest
-class VideoUploadServiceTests {
+class VideoUploadServiceTest {
 
   @InjectMocks
   private VideoUploadService videoUploadService;

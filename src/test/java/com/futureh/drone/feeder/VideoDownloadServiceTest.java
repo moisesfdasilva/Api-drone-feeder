@@ -18,7 +18,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.Resource;
 
 @SpringBootTest
-class VideoDownloadServiceTests {
+class VideoDownloadServiceTest {
 
   @InjectMocks
   private VideoDownloadService videoDownloadService;
