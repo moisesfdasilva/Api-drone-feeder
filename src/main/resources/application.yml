@@ -3,3 +3,11 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  jpa:
+    hibernate:
+      ddl-auto: none
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:/localhost:3306/droneFeederDb
+    username: root
+    password: password
