@@ -27,6 +27,7 @@ public class VideoUploadService {
       InputStream inputStream = multipartFile.getInputStream();
       Path filePath = uploadDirectory.resolve(fileName);
       Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
+      // Save file in DB -> uri
     } catch (IOException err) {
       throw new InputFileException();
     }
