@@ -6,7 +6,9 @@ import com.futureh.drone.feeder.model.Delivery;
 import com.futureh.drone.feeder.model.Drone;
 import com.futureh.drone.feeder.model.Video;
 import com.futureh.drone.feeder.repository.DeliveryRepository;
+import com.futureh.drone.feeder.repository.VideoRepository;
 import java.io.IOException;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,9 @@ public class DeliveryService {
 
   @Autowired
   private DroneService droneService;
+
+  @Autowired
+  private VideoRepository videoRepository;
 
   /** addDelivery method.*/
   public Delivery addDelivery(DeliveryDto delivery) {
@@ -57,6 +62,11 @@ public class DeliveryService {
     delivery.setVideo(newVideo);
     Delivery deliveryUpdate = deliveryRepository.save(delivery);
     return deliveryUpdate;
+  }
+
+  /** addVideo method. */
+  public List<Video> getAllVideos() {
+    return videoRepository.findAll();
   }
 
 }
