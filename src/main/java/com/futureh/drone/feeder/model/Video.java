@@ -4,6 +4,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 /**
@@ -19,7 +20,9 @@ public class Video {
   private String fileName;
   private String downloadUri;
   private Long size;
-  // DRONE
+
+  @ManyToOne
+  private Drone drone;
 
   public Long getId() {
     return id;
@@ -51,6 +54,14 @@ public class Video {
 
   public void setSize(Long size) {
     this.size = size;
+  }
+
+  public Drone getDrone() {
+    return drone;
+  }
+
+  public void setDrone(Drone drone) {
+    this.drone = drone;
   }
 
 }

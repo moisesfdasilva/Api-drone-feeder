@@ -23,8 +23,8 @@ public class DeliveryController {
   /** addDelivery method.*/
   @PostMapping("/new")
   public ResponseEntity<Delivery> addDelivery(@RequestBody DeliveryDto delivery) {
-    Delivery res = deliveryService.addDelivery(delivery);
-    return ResponseEntity.ok(res);
+    Delivery response = deliveryService.addDelivery(delivery);
+    return ResponseEntity.ok(response);
   }
 
 }
