@@ -31,8 +31,9 @@ public class DeliveryController {
 
   /** addVideo method.*/
   @PostMapping("/addVideo")
-  public ResponseEntity<String> addVideo(@RequestBody VideoDto video) throws IOException {
-    String response = deliveryService.addVideo(video);
+  public ResponseEntity<Delivery> addVideo(@RequestBody VideoDto video) throws IOException {
+    Delivery response = deliveryService.addVideo(video);
     return ResponseEntity.ok(response);
   }
+
 }

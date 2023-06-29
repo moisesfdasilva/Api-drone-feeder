@@ -39,26 +39,24 @@ public class DeliveryService {
   }
 
   /** addVideo method. */
-  public String addVideo(VideoDto video) throws IOException {
+  public Delivery addVideo(VideoDto video) throws IOException {
     // verificar a existencia do upload do video
     String videoName = video.getVideoName();
     Resource resource = videoDownloadService.getVideoAsResource(videoName);
     Long size = resource.contentLength();
-    Video xvideo = new Video(videoName, size);
+    Video newVideo = new Video(videoName, size);
+
     // verificar a existencia do drone
     String droneName = videoName.substring(0, 4);
     Drone drone = droneService.getDroneByName(droneName);
-    xvideo.setDrone(drone);
+    newVideo.setDrone(drone);
+
     // verificar a existencia da entrega
     Long deliveryId = video.getDeliveryId();
-    System.out.println("XXXXXXXXXXXXX3");
     Delivery delivery = deliveryRepository.findById(deliveryId).orElse(null);
-    System.out.println("XXXXXXXXXXXXX4");
-    delivery.setVideo(xvideo);
-    System.out.println("XXXXXXXXXXXXX5");
-    Delivery deliveryA = deliveryRepository.save(delivery);
-    System.out.println("XXXXXXXXXXXXX6");
-    return "deliveryA";
+    delivery.setVideo(newVideo);
+    Delivery deliveryUpdate = deliveryRepository.save(delivery);
+    return deliveryUpdate;
   }
 
 }
