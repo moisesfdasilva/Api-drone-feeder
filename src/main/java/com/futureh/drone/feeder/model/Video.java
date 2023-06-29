@@ -4,11 +4,13 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * Video class.
  */
 @Entity
+@Table(name = "video")
 public class Video {
 
   @Id
@@ -17,6 +19,7 @@ public class Video {
   private String fileName;
   private String downloadUri;
   private Long size;
+  // DRONE
 
   public Long getId() {
     return id;
