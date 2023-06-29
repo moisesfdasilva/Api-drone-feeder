@@ -7,6 +7,7 @@ public class DroneDto {
 
   private String name;
   private String model;
+  private Float capacityWeightInKg;
 
   public String getName() {
     return name;
@@ -22,6 +23,14 @@ public class DroneDto {
 
   public void setModel(String model) {
     this.model = model;
+  }
+
+  public Float getCapacityWeightInKg() {
+    return capacityWeightInKg;
+  }
+
+  public void setCapacityWeightInKg(Float capacityWeightInKg) {
+    this.capacityWeightInKg = capacityWeightInKg;
   }
 
 }

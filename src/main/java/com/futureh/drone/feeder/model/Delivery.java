@@ -23,7 +23,7 @@ public class Delivery {
   private String longitude;
   private String latitude;
   private String status;
-  private Integer weightInKg;
+  private Float weightInKg;
 
   @OneToOne(cascade = CascadeType.ALL)
   private Video video;
@@ -32,7 +32,7 @@ public class Delivery {
    * Delivery constructor method.
    */
   public Delivery(String address, String zipCode, String longitude, String latitude,
-      Integer weightInKg) {
+      Float weightInKg) {
     this.address = address;
     this.zipCode = zipCode;
     this.longitude = longitude;
@@ -89,11 +89,11 @@ public class Delivery {
     this.status = status;
   }
 
-  public Integer getWeightInKg() {
+  public Float getWeightInKg() {
     return weightInKg;
   }
 
-  public void setWeightInKg(Integer weightInKg) {
+  public void setWeightInKg(Float weightInKg) {
     this.weightInKg = weightInKg;
   }
 

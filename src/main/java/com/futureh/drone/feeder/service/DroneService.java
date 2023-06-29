@@ -19,7 +19,8 @@ public class DroneService {
   public Drone addDrone(DroneDto drone) {
     String name = drone.getName();
     String model = drone.getModel();
-    Drone newDrone = droneRepository.save(new Drone(name, model));
+    Float capacityWeightInKg = drone.getCapacityWeightInKg();
+    Drone newDrone = droneRepository.save(new Drone(name, model, capacityWeightInKg));
     return newDrone;
   }
 

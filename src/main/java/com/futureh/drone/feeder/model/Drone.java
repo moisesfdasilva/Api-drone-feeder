@@ -21,6 +21,7 @@ public class Drone {
   private Long id;
   private String name;
   private String model;
+  private Float capacityWeightInKg;
 
   @OneToMany
   @JoinColumn(name = "video_id")
@@ -29,9 +30,10 @@ public class Drone {
   /**
    * Drone constructor method.
    */
-  public Drone(String name, String model) {
+  public Drone(String name, String model, Float capacityWeightInKg) {
     this.name = name;
     this.model = model;
+    this.capacityWeightInKg = capacityWeightInKg;
   }
 
   public Long getId() {
@@ -56,6 +58,14 @@ public class Drone {
 
   public void setModel(String model) {
     this.model = model;
+  }
+
+  public Float getCapacityWeightInKg() {
+    return capacityWeightInKg;
+  }
+
+  public void setCapacityWeightInKg(Float capacityWeightInKg) {
+    this.capacityWeightInKg = capacityWeightInKg;
   }
 
   public List<Video> getVideos() {
