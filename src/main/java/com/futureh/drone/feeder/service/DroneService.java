@@ -28,12 +28,9 @@ public class DroneService {
   /** getDroneByName method.*/
   public Drone getDroneByName(String droneName) {
     List<Drone> drones = droneRepository.findAll();
-    System.out.println("XXXXXXXXXXXXXB");
     Drone drone = drones.stream()
         .filter(drn -> drn.getName().equals(droneName))
         .findAny().orElse(null);
-    System.out.println(drone.getModel());
-    System.out.println("XXXXXXXXXXXXXC");
     return drone;
   }
 

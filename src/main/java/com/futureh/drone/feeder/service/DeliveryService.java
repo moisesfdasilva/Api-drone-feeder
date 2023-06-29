@@ -48,12 +48,14 @@ public class DeliveryService {
     // verificar a existencia do drone
     String droneName = videoName.substring(0, 4);
     Drone drone = droneService.getDroneByName(droneName);
-    System.out.println(drone.getName());
     xvideo.setDrone(drone);
     // verificar a existencia da entrega
     Long deliveryId = video.getDeliveryId();
+    System.out.println("XXXXXXXXXXXXX3");
     Delivery delivery = deliveryRepository.findById(deliveryId).orElse(null);
+    System.out.println("XXXXXXXXXXXXX4");
     delivery.setVideo(xvideo);
+    System.out.println("XXXXXXXXXXXXX5");
     Delivery deliveryA = deliveryRepository.save(delivery);
     System.out.println("XXXXXXXXXXXXX6");
     return "deliveryA";

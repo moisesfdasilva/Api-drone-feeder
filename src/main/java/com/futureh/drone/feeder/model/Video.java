@@ -24,9 +24,10 @@ public class Video {
   @ManyToOne
   private Drone drone;
 
-  /**
-   * Video constructor method.
-   */
+  /** Video default constructor method. */
+  public Video() { }
+
+  /** Video constructor method. */
   public Video(String fileName, Long size) {
     this.fileName = fileName;
     this.downloadUri = "/drone/downloadVideo/" + fileName;
