@@ -1,5 +1,6 @@
 package com.futureh.drone.feeder.model;
 
+import com.futureh.drone.feeder.util.DeliveryStatus;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -22,7 +23,7 @@ public class Delivery {
   private String zipCode;
   private String longitude;
   private String latitude;
-  private String status;
+  private DeliveryStatus status;
   private Float weightInKg;
 
   @OneToOne(cascade = CascadeType.ALL)
@@ -37,7 +38,7 @@ public class Delivery {
     this.zipCode = zipCode;
     this.longitude = longitude;
     this.latitude = latitude;
-    this.status = "TO DELIVER";
+    this.status = DeliveryStatus.TO_DELIVER;
     this.weightInKg = weightInKg;
   }
 
@@ -81,11 +82,11 @@ public class Delivery {
     this.latitude = latitude;
   }
 
-  public String getStatus() {
+  public DeliveryStatus getStatus() {
     return status;
   }
 
-  public void setStatus(String status) {
+  public void setStatus(DeliveryStatus status) {
     this.status = status;
   }
 

@@ -5,6 +5,7 @@ import com.futureh.drone.feeder.model.Drone;
 import com.futureh.drone.feeder.model.Video;
 import com.futureh.drone.feeder.repository.DeliveryRepository;
 import com.futureh.drone.feeder.repository.DroneRepository;
+import com.futureh.drone.feeder.util.DeliveryStatus;
 import java.util.Arrays;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -46,7 +47,7 @@ public class Application implements CommandLineRunner {
     Video firstVideo = new Video(fileName, size);
     firstVideo.setDrone(thirdDrone);
     firstDelivery.setVideo(firstVideo);
-    firstDelivery.setStatus("DELIVERED");
+    firstDelivery.setStatus(DeliveryStatus.DELIVERED);
 
     String address2 = "Estrada do Camorim, 1842 - Camorim, Rio de Janeiro - RJ";
     String zipCode2 = "22780-070";
