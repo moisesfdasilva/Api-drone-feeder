@@ -9,6 +9,7 @@ public class DeliveryDto {
   private String zipCode;
   private String longitude;
   private String latitude;
+  private Integer weightInKg;
 
   public String getAddress() {
     return address;
@@ -40,6 +41,14 @@ public class DeliveryDto {
 
   public void setLatitude(String latitude) {
     this.latitude = latitude;
+  }
+
+  public Integer getWeightInKg() {
+    return weightInKg;
+  }
+
+  public void setWeightInKg(Integer weightInKg) {
+    this.weightInKg = weightInKg;
   }
 
 }
