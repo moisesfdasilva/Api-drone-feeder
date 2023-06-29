@@ -27,9 +27,10 @@ public class Drone {
   @JoinColumn(name = "video_id")
   private List<Video> videos;
 
-  /**
-   * Drone constructor method.
-   */
+  /** Drone default constructor method. */
+  public Drone() { }
+
+  /** Drone constructor method. */
   public Drone(String name, String model, Float capacityWeightInKg) {
     this.name = name;
     this.model = model;

@@ -29,9 +29,10 @@ public class Delivery {
   @OneToOne(cascade = CascadeType.ALL)
   private Video video;
 
-  /**
-   * Delivery constructor method.
-   */
+  /** Delivery default constructor method. */
+  public Delivery() { }
+
+  /** Delivery constructor method. */
   public Delivery(String address, String zipCode, String longitude, String latitude,
       Float weightInKg) {
     this.address = address;

@@ -3,6 +3,7 @@ package com.futureh.drone.feeder.service;
 import com.futureh.drone.feeder.dto.DroneDto;
 import com.futureh.drone.feeder.model.Drone;
 import com.futureh.drone.feeder.repository.DroneRepository;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,18 @@ public class DroneService {
     Float capacityWeightInKg = drone.getCapacityWeightInKg();
     Drone newDrone = droneRepository.save(new Drone(name, model, capacityWeightInKg));
     return newDrone;
+  }
+
+  /** getDroneByName method.*/
+  public Drone getDroneByName(String droneName) {
+    List<Drone> drones = droneRepository.findAll();
+    System.out.println("XXXXXXXXXXXXXB");
+    Drone drone = drones.stream()
+        .filter(drn -> drn.getName().equals(droneName))
+        .findAny().orElse(null);
+    System.out.println(drone.getModel());
+    System.out.println("XXXXXXXXXXXXXC");
+    return drone;
   }
 
 }
