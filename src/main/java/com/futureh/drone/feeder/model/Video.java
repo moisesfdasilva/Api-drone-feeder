@@ -15,7 +15,7 @@ import javax.persistence.Table;
 public class Video {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.AUTO)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String fileName;
   private String downloadUri;
@@ -23,6 +23,15 @@ public class Video {
 
   @ManyToOne
   private Drone drone;
+
+  /**
+   * Video constructor method.
+   */
+  public Video(String fileName, Long size) {
+    this.fileName = fileName;
+    this.downloadUri = "/drone/downloadVideo/" + fileName;
+    this.size = size;
+  }
 
   public Long getId() {
     return id;
