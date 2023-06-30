@@ -7,6 +7,7 @@ import com.futureh.drone.feeder.model.Drone;
 import com.futureh.drone.feeder.model.Video;
 import com.futureh.drone.feeder.repository.DeliveryRepository;
 import com.futureh.drone.feeder.repository.VideoRepository;
+import com.futureh.drone.feeder.util.DeliveryStatus;
 import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,21 +46,19 @@ public class DeliveryService {
 
   /** addVideo method. */
   public Delivery addVideo(VideoDto video) throws IOException {
-    // verificar a existencia do upload do video
     String videoName = video.getVideoName();
     Resource resource = videoDownloadService.getVideoAsResource(videoName);
     Long size = resource.contentLength();
     Video newVideo = new Video(videoName, size);
 
-    // verificar a existencia do drone
     String droneName = videoName.substring(0, 4);
     Drone drone = droneService.getDroneByName(droneName);
     newVideo.setDrone(drone);
 
-    // verificar a existencia da entrega
     Long deliveryId = video.getDeliveryId();
     Delivery delivery = deliveryRepository.findById(deliveryId).orElse(null);
     delivery.setVideo(newVideo);
+    delivery.setStatus(DeliveryStatus.DELIVERED);
     Delivery deliveryUpdate = deliveryRepository.save(delivery);
     return deliveryUpdate;
   }

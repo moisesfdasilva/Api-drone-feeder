@@ -34,4 +34,9 @@ public class DroneService {
     return drone;
   }
 
+  /** getAllDrones method.*/
+  public List<Drone> getAllDrones() {
+    return droneRepository.findAll();
+  }
+
 }
