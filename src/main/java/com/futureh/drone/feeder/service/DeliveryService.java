@@ -68,6 +68,11 @@ public class DeliveryService {
     return videoRepository.findAll();
   }
 
+  /** getVideoById method. */
+  public Video getVideoById(Long id) {
+    return videoRepository.findById(id).orElse(null);
+  }
+
   /** getAllDeliveries method.*/
   public List<Delivery> getAllDeliveries() {
     return deliveryRepository.findAll();

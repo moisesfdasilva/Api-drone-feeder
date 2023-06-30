@@ -5,6 +5,7 @@ import com.futureh.drone.feeder.dto.VideoDto;
 import com.futureh.drone.feeder.model.Delivery;
 import com.futureh.drone.feeder.model.Video;
 import com.futureh.drone.feeder.response.DeliveryResponse;
+import com.futureh.drone.feeder.response.VideoDetailsResponse;
 import com.futureh.drone.feeder.response.VideoResponse;
 import com.futureh.drone.feeder.service.DeliveryService;
 import java.io.IOException;
@@ -57,6 +58,17 @@ public class DeliveryController {
     }).collect(Collectors.toList());
 
     return ResponseEntity.ok(videosResponse);
+  }
+
+  /** getVideoDetails method.*/
+  @GetMapping("/video/{id}")
+  public ResponseEntity<VideoDetailsResponse> getVideoDetails(@PathVariable("id") Long id) {
+
+    Video video = deliveryService.getVideoById(id);
+    VideoDetailsResponse videoDetailsResponse = new VideoDetailsResponse();
+    videoDetailsResponse.createResponseByVideoEntity(video);
+
+    return ResponseEntity.ok(videoDetailsResponse);
   }
 
   /** getAllDeliveries method.*/
