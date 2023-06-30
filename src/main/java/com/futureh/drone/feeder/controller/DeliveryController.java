@@ -46,4 +46,11 @@ public class DeliveryController {
     return ResponseEntity.ok(response);
   }
 
+  /** getAllDeliveries method.*/
+  @GetMapping("/all")
+  public ResponseEntity<List<Delivery>> getAllDeliveries() {
+    List<Delivery> response = deliveryService.getAllDeliveries();
+    return ResponseEntity.ok(response);
+  }
+
 }

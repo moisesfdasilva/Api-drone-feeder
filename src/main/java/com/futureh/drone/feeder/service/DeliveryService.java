@@ -63,9 +63,14 @@ public class DeliveryService {
     return deliveryUpdate;
   }
 
-  /** addVideo method. */
+  /** getAllVideos method. */
   public List<Video> getAllVideos() {
     return videoRepository.findAll();
+  }
+
+  /** getAllDeliveries method.*/
+  public List<Delivery> getAllDeliveries() {
+    return deliveryRepository.findAll();
   }
 
 }
