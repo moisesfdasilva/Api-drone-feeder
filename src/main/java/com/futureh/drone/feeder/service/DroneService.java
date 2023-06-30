@@ -39,4 +39,9 @@ public class DroneService {
     return droneRepository.findAll();
   }
 
+  /** getDroneById method.*/
+  public Drone getDroneById(Long id) {
+    return droneRepository.findById(id).orElse(null);
+  }
+
 }
