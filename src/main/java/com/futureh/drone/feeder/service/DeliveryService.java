@@ -78,4 +78,15 @@ public class DeliveryService {
     return deliveryRepository.findById(id).orElse(null);
   }
 
+  /** removeDelivery method.*/
+  public Long removeDelivery(Long id) {
+    Delivery delivery = deliveryRepository.findById(id).orElse(null);
+    if (delivery != null) {
+      deliveryRepository.delete(delivery);
+      return id;
+    } else {
+      return null;
+    }
+  }
+  
 }

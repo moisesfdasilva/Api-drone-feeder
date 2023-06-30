@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -58,6 +59,14 @@ public class DeliveryController {
   @GetMapping("/{id}")
   public ResponseEntity<Delivery> getDeliveryById(@PathVariable("id") Long id) {
     Delivery response = deliveryService.getDeliveryById(id);
+    return ResponseEntity.ok(response);
+  }
+
+  /** removeDelivery method.*/
+  @DeleteMapping("/delete/{id}")
+  public ResponseEntity<String> removeDelivery(@PathVariable("id") Long id) {
+    Long idRemoved = deliveryService.removeDelivery(id);
+    String response = "Id " + idRemoved + " has been removed.";
     return ResponseEntity.ok(response);
   }
 
