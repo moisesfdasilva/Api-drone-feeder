@@ -44,4 +44,15 @@ public class DroneService {
     return droneRepository.findById(id).orElse(null);
   }
 
+  /** removeDrone method.*/
+  public Long removeDrone(Long id) {
+    Drone drone = droneRepository.findById(id).orElse(null);
+    if (drone != null) {
+      droneRepository.delete(drone);
+      return id;
+    } else {
+      return null;
+    }
+  }
+
 }

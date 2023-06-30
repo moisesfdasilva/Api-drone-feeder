@@ -6,6 +6,7 @@ import com.futureh.drone.feeder.service.DroneService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,6 +43,14 @@ public class DroneController {
   public ResponseEntity<Drone> getDroneById(@PathVariable("id") Long id) {
     Drone drone = droneService.getDroneById(id);
     return ResponseEntity.ok(drone);
+  }
+
+  /** removeDrone method.*/
+  @DeleteMapping("delete/{id}")
+  public ResponseEntity<String> removeDrone(@PathVariable("id") Long id) {
+    Long idRemoved = droneService.removeDrone(id);
+    String response = "Id " + idRemoved + " has been removed.";
+    return ResponseEntity.ok(response);
   }
 
 }
