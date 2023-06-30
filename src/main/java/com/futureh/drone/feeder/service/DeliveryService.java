@@ -73,4 +73,9 @@ public class DeliveryService {
     return deliveryRepository.findAll();
   }
 
+  /** getDeliveryById method.*/
+  public Delivery getDeliveryById(Long id) {
+    return deliveryRepository.findById(id).orElse(null);
+  }
+
 }
