@@ -4,9 +4,12 @@ import com.futureh.drone.feeder.dto.DeliveryDto;
 import com.futureh.drone.feeder.dto.VideoDto;
 import com.futureh.drone.feeder.model.Delivery;
 import com.futureh.drone.feeder.model.Video;
+import com.futureh.drone.feeder.response.DeliveryResponse;
+import com.futureh.drone.feeder.response.VideoResponse;
 import com.futureh.drone.feeder.service.DeliveryService;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,23 +47,41 @@ public class DeliveryController {
 
   /** getAllVideos method.*/
   @GetMapping("/allVideos")
-  public ResponseEntity<List<Video>> getAllVideos() {
-    List<Video> response = deliveryService.getAllVideos();
-    return ResponseEntity.ok(response);
+  public ResponseEntity<List<VideoResponse>> getAllVideos() {
+    List<Video> videos = deliveryService.getAllVideos();
+
+    List<VideoResponse> videosResponse = videos.stream().map(vdo -> {
+      VideoResponse videoResponse = new VideoResponse();
+      videoResponse.createResponseByVideoEntity(vdo);
+      return videoResponse;
+    }).collect(Collectors.toList());
+
+    return ResponseEntity.ok(videosResponse);
   }
 
   /** getAllDeliveries method.*/
   @GetMapping("/all")
-  public ResponseEntity<List<Delivery>> getAllDeliveries() {
-    List<Delivery> response = deliveryService.getAllDeliveries();
-    return ResponseEntity.ok(response);
+  public ResponseEntity<List<DeliveryResponse>> getAllDeliveries() {
+    List<Delivery> deliveries = deliveryService.getAllDeliveries();
+
+    List<DeliveryResponse> deliveriesResponse = deliveries.stream().map(dlv -> {
+      DeliveryResponse deliveryResponse = new DeliveryResponse();
+      deliveryResponse.createResponseByDeliveryEntity(dlv);
+      return deliveryResponse;
+    }).collect(Collectors.toList());
+
+    return ResponseEntity.ok(deliveriesResponse);
   }
 
   /** getDeliveryById method.*/
   @GetMapping("/{id}")
-  public ResponseEntity<Delivery> getDeliveryById(@PathVariable("id") Long id) {
-    Delivery response = deliveryService.getDeliveryById(id);
-    return ResponseEntity.ok(response);
+  public ResponseEntity<DeliveryResponse> getDeliveryById(@PathVariable("id") Long id) {
+    Delivery delivery = deliveryService.getDeliveryById(id);
+
+    DeliveryResponse deliveryResponse = new DeliveryResponse();
+    deliveryResponse.createResponseByDeliveryEntity(delivery);
+
+    return ResponseEntity.ok(deliveryResponse);
   }
 
   /** removeDelivery method.*/

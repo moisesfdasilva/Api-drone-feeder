@@ -2,8 +2,10 @@ package com.futureh.drone.feeder.controller;
 
 import com.futureh.drone.feeder.dto.DroneDto;
 import com.futureh.drone.feeder.model.Drone;
+import com.futureh.drone.feeder.response.DroneResponse;
 import com.futureh.drone.feeder.service.DroneService;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,16 +36,27 @@ public class DroneController {
 
   /** getAllDrones method.*/
   @GetMapping("/all")
-  public ResponseEntity<List<Drone>> getAllDrones() {
+  public ResponseEntity<List<DroneResponse>> getAllDrones() {
     List<Drone> drones = droneService.getAllDrones();
-    return ResponseEntity.ok(drones);
+
+    List<DroneResponse> dronesResponse = drones.stream().map(drn -> {
+      DroneResponse droneResponse = new DroneResponse();
+      droneResponse.createResponseByDroneEntity(drn);
+      return droneResponse;
+    }).collect(Collectors.toList());
+
+    return ResponseEntity.ok(dronesResponse);
   }
 
   /** getDroneById method.*/
   @GetMapping("/{id}")
-  public ResponseEntity<Drone> getDroneById(@PathVariable("id") Long id) {
+  public ResponseEntity<DroneResponse> getDroneById(@PathVariable("id") Long id) {
     Drone drone = droneService.getDroneById(id);
-    return ResponseEntity.ok(drone);
+
+    DroneResponse droneResponse = new DroneResponse();
+    droneResponse.createResponseByDroneEntity(drone);
+
+    return ResponseEntity.ok(droneResponse);
   }
 
   /** removeDrone method.*/
