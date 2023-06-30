@@ -55,4 +55,18 @@ public class DroneService {
     }
   }
 
+  /** updateDrone method.*/
+  public Drone updateDrone(Long id, DroneDto drone) {
+    Drone droneUpdate = droneRepository.findById(id).orElse(null);
+    if (droneUpdate != null) {
+      droneUpdate.setName(drone.getName());
+      droneUpdate.setModel(drone.getModel());
+      droneUpdate.setCapacityWeightInKg(drone.getCapacityWeightInKg());
+      droneRepository.save(droneUpdate);
+      return droneRepository.save(droneUpdate);
+    } else {
+      return null;
+    }
+  }
+
 }
