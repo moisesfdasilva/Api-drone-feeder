@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -68,6 +69,14 @@ public class DeliveryController {
     Long idRemoved = deliveryService.removeDelivery(id);
     String response = "Id " + idRemoved + " has been removed.";
     return ResponseEntity.ok(response);
+  }
+
+  /** updateDelivery method.*/
+  @PutMapping("/update/{id}")
+  public ResponseEntity<Delivery> updateDelivery(@PathVariable("id") Long id,
+      @RequestBody DeliveryDto delivery) {
+    Delivery deliveryUpdated = deliveryService.updateDelivery(id, delivery);
+    return ResponseEntity.ok(deliveryUpdated);
   }
 
 }

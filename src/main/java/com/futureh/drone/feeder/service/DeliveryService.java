@@ -88,5 +88,20 @@ public class DeliveryService {
       return null;
     }
   }
+
+  /** updateDelivery method.*/
+  public Delivery updateDelivery(Long id, DeliveryDto delivery) {
+    Delivery deliveryUpdate = deliveryRepository.findById(id).orElse(null);
+    if (deliveryUpdate != null) {
+      deliveryUpdate.setAddress(delivery.getAddress());
+      deliveryUpdate.setZipCode(delivery.getZipCode());
+      deliveryUpdate.setLongitude(delivery.getLongitude());
+      deliveryUpdate.setLatitude(delivery.getLatitude());
+      deliveryUpdate.setWeightInKg(delivery.getWeightInKg());
+      return deliveryRepository.save(deliveryUpdate);
+    } else {
+      return null;
+    }
+  }
   
 }
