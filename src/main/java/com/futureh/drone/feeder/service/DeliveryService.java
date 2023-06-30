@@ -2,6 +2,7 @@ package com.futureh.drone.feeder.service;
 
 import com.futureh.drone.feeder.dto.DeliveryDto;
 import com.futureh.drone.feeder.dto.VideoDto;
+import com.futureh.drone.feeder.exception.InputNotFoundException;
 import com.futureh.drone.feeder.model.Delivery;
 import com.futureh.drone.feeder.model.Drone;
 import com.futureh.drone.feeder.model.Video;
@@ -70,7 +71,12 @@ public class DeliveryService {
 
   /** getVideoById method. */
   public Video getVideoById(Long id) {
-    return videoRepository.findById(id).orElse(null);
+    Video video = videoRepository.findById(id).orElse(null);
+    if (video != null) {
+      return video;      
+    } else {
+      throw new InputNotFoundException("Video id not found.");
+    }
   }
 
   /** getAllDeliveries method.*/
@@ -80,7 +86,12 @@ public class DeliveryService {
 
   /** getDeliveryById method.*/
   public Delivery getDeliveryById(Long id) {
-    return deliveryRepository.findById(id).orElse(null);
+    Delivery delivery = deliveryRepository.findById(id).orElse(null);
+    if (delivery != null) {
+      return delivery;      
+    } else {
+      throw new InputNotFoundException("Delivery id not found.");
+    }
   }
 
   /** removeDelivery method.*/

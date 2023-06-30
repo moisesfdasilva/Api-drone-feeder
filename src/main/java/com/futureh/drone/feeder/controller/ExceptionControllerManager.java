@@ -1,6 +1,7 @@
 package com.futureh.drone.feeder.controller;
 
 import com.futureh.drone.feeder.exception.InputFileException;
+import com.futureh.drone.feeder.exception.InputNotFoundException;
 import com.futureh.drone.feeder.exception.InputVideoNameException;
 import com.futureh.drone.feeder.exception.IntServerErrorInVideoFinding;
 import com.futureh.drone.feeder.exception.VideoNotFoundException;
@@ -60,6 +61,15 @@ public class ExceptionControllerManager {
     HashMap<String, String> message = new HashMap<String, String>();
     message.put("error", exception.getMessage());
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+  }
+
+  /** HandleInputNotFoundException method.*/
+  @ExceptionHandler(InputNotFoundException.class)
+  public ResponseEntity<HashMap<String, String>> handleInputNotFoundException(
+      InputNotFoundException exception) {
+    HashMap<String, String> message = new HashMap<String, String>();
+    message.put("error", exception.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
   }
 
 }
