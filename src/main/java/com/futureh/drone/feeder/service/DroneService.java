@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 public class DroneService {
 
   String droneIdNotFound = "Drone id not found.";
+  String droneNameNotFound = "Drone name not found.";
 
   @Autowired
   private DroneRepository droneRepository;
@@ -34,7 +35,11 @@ public class DroneService {
     Drone drone = drones.stream()
         .filter(drn -> drn.getName().equals(droneName))
         .findAny().orElse(null);
-    return drone;
+    if (drone != null) {
+      return drone;      
+    } else {
+      throw new InputNotFoundException(droneNameNotFound);
+    }
   }
 
   /** getAllDrones method.*/
@@ -50,7 +55,6 @@ public class DroneService {
     } else {
       throw new InputNotFoundException(droneIdNotFound);
     }
-
   }
 
   /** removeDrone method.*/

@@ -1,8 +1,8 @@
 package com.futureh.drone.feeder.service;
 
 import com.futureh.drone.feeder.dto.DeliveryDto;
-import com.futureh.drone.feeder.dto.VideoDto;
 import com.futureh.drone.feeder.exception.InputNotFoundException;
+import com.futureh.drone.feeder.exception.WrongInputDataException;
 import com.futureh.drone.feeder.model.Delivery;
 import com.futureh.drone.feeder.model.Drone;
 import com.futureh.drone.feeder.model.Video;
@@ -10,10 +10,15 @@ import com.futureh.drone.feeder.repository.DeliveryRepository;
 import com.futureh.drone.feeder.repository.VideoRepository;
 import com.futureh.drone.feeder.util.DeliveryStatus;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * DeliveryService class.
@@ -21,11 +26,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class DeliveryService {
 
-  @Autowired
-  private DeliveryRepository deliveryRepository;
+  String paramWithoutVideo = "The param don't have a video (Param must have a video).";
+  String videoIdNotFound = "Video id not found.";
+  String deliveryIdNotFound = "Delivery id not found.";
 
   @Autowired
-  private VideoDownloadService videoDownloadService;
+  private DeliveryRepository deliveryRepository;
 
   @Autowired
   private DroneService droneService;
@@ -33,7 +39,7 @@ public class DeliveryService {
   @Autowired
   private VideoRepository videoRepository;
 
-  /** addDelivery method.*/
+  /** addDelivery method. */
   public Delivery addDelivery(DeliveryDto delivery) {
     String address = delivery.getAddress();
     String zipCode = delivery.getZipCode();
@@ -42,25 +48,48 @@ public class DeliveryService {
     Float weightInKg = delivery.getWeightInKg();
     Delivery newDelivery = deliveryRepository.save(
         new Delivery(address, zipCode, longitude, latitude, weightInKg));
+
     return newDelivery;
   }
 
-  /** addVideo method. */
-  public Delivery addVideo(VideoDto video) throws IOException {
-    String videoName = video.getVideoName();
-    Resource resource = videoDownloadService.getVideoAsResource(videoName);
-    Long size = resource.contentLength();
-    Video newVideo = new Video(videoName, size);
+  /** getVideoByName method. */
+  public Video getVideoByName(String videoName) {
+    List<Video> videos = videoRepository.findAll();
+    Video video = videos.stream()
+        .filter(vdo -> vdo.getFileName().equals(videoName))
+        .findAny().orElse(null);
+    return video;
+  }
 
+  /** saveFile method. */
+  public String saveFile(String videoName, MultipartFile multipartFile) throws IOException {
+    Path uploadDirectory = Paths.get("videos-uploads");
+    String uri = "/drone/downloadVideo/" + videoName;
+
+    try {
+      InputStream inputStream = multipartFile.getInputStream();
+      Path videoPath = uploadDirectory.resolve(videoName);
+      Files.copy(inputStream, videoPath, StandardCopyOption.REPLACE_EXISTING);
+    } catch (IOException err) {
+      throw new WrongInputDataException(paramWithoutVideo);
+    }
+
+    return uri;
+  }
+
+  /** addVideo method. */
+  public Delivery addVideo(Long id, Video video) throws IOException {
+    String videoName = video.getFileName();
     String droneName = videoName.substring(0, 4);
     Drone drone = droneService.getDroneByName(droneName);
-    newVideo.setDrone(drone);
+    video.setDrone(drone);
 
-    Long deliveryId = video.getDeliveryId();
-    Delivery delivery = deliveryRepository.findById(deliveryId).orElse(null);
-    delivery.setVideo(newVideo);
+    Delivery delivery = this.getDeliveryById(id);
+
+    delivery.setVideo(video);
     delivery.setStatus(DeliveryStatus.DELIVERED);
     Delivery deliveryUpdate = deliveryRepository.save(delivery);
+
     return deliveryUpdate;
   }
 
@@ -75,7 +104,7 @@ public class DeliveryService {
     if (video != null) {
       return video;      
     } else {
-      throw new InputNotFoundException("Video id not found.");
+      throw new InputNotFoundException(videoIdNotFound);
     }
   }
 
@@ -90,7 +119,7 @@ public class DeliveryService {
     if (delivery != null) {
       return delivery;      
     } else {
-      throw new InputNotFoundException("Delivery id not found.");
+      throw new InputNotFoundException(deliveryIdNotFound);
     }
   }
 
@@ -101,7 +130,7 @@ public class DeliveryService {
       deliveryRepository.delete(delivery);
       return id;
     } else {
-      throw new InputNotFoundException("Delivery id not found.");
+      throw new InputNotFoundException(deliveryIdNotFound);
     }
   }
 
@@ -116,7 +145,7 @@ public class DeliveryService {
       deliveryUpdate.setWeightInKg(delivery.getWeightInKg());
       return deliveryRepository.save(deliveryUpdate);
     } else {
-      throw new InputNotFoundException("Delivery id not found.");
+      throw new InputNotFoundException(deliveryIdNotFound);
     }
   }
   

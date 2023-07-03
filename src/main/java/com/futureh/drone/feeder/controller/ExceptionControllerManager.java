@@ -1,5 +1,6 @@
 package com.futureh.drone.feeder.controller;
 
+import com.futureh.drone.feeder.exception.ConflictWithInputDataException;
 import com.futureh.drone.feeder.exception.InputNotFoundException;
 import com.futureh.drone.feeder.exception.IntServerErrorInVideoFinding;
 import com.futureh.drone.feeder.exception.WrongInputDataException;
@@ -50,6 +51,15 @@ public class ExceptionControllerManager {
     HashMap<String, String> message = new HashMap<String, String>();
     message.put("error", exception.getMessage());
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+  }
+
+  /** HandleConflictWithInputData method.*/
+  @ExceptionHandler(ConflictWithInputDataException.class)
+  public ResponseEntity<HashMap<String, String>> handleConflictWithInputData(
+      ConflictWithInputDataException exception) {
+    HashMap<String, String> message = new HashMap<String, String>();
+    message.put("error", exception.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
   }
 
 }
