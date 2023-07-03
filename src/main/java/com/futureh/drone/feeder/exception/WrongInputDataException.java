@@ -3,11 +3,11 @@ package com.futureh.drone.feeder.exception;
 /**
  * InputObjetctException class.
  */
-public class InputObjetctException extends RuntimeException {
+public class WrongInputDataException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
 
-  public InputObjetctException(String message) {
+  public WrongInputDataException(String message) {
     super(message);
   }
 
