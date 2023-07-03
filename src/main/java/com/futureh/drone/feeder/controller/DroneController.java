@@ -30,11 +30,15 @@ public class DroneController {
 
   /** addDrone method.*/
   @PostMapping("/new")
-  public ResponseEntity<Drone> addDrone(@RequestBody DroneDto drone) {
+  public ResponseEntity<DroneResponse> addDrone(@RequestBody DroneDto drone) {
     DroneMiddleware.isValidDrone(drone);
 
-    Drone response = droneService.addDrone(drone);
-    return ResponseEntity.ok(response);
+    Drone newDrone = droneService.addDrone(drone);
+
+    DroneResponse newDroneResponse = new DroneResponse();
+    newDroneResponse.createResponseByDroneEntity(newDrone);
+
+    return ResponseEntity.ok(newDroneResponse);
   }
 
   /** getAllDrones method.*/
@@ -72,12 +76,16 @@ public class DroneController {
 
   /** updateDrone method.*/
   @PutMapping("/update/{id}")
-  public ResponseEntity<Drone> updateDrone(@PathVariable("id") Long id,
+  public ResponseEntity<DroneResponse> updateDrone(@PathVariable("id") Long id,
       @RequestBody DroneDto drone) {
     DroneMiddleware.isValidDrone(drone);
 
     Drone droneUpdated = droneService.updateDrone(id, drone);
-    return ResponseEntity.ok(droneUpdated);
+
+    DroneResponse droneUpdatedResponse = new DroneResponse();
+    droneUpdatedResponse.createResponseByDroneEntity(droneUpdated);
+
+    return ResponseEntity.ok(droneUpdatedResponse);
   }
 
 }

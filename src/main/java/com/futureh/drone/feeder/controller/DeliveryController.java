@@ -36,11 +36,15 @@ public class DeliveryController {
 
   /** addDelivery method.*/
   @PostMapping("/new")
-  public ResponseEntity<Delivery> addDelivery(@RequestBody DeliveryDto delivery) {
+  public ResponseEntity<DeliveryResponse> addDelivery(@RequestBody DeliveryDto delivery) {
     DeliveryMiddleware.isValidDelivery(delivery);
 
     Delivery newDelivery = deliveryService.addDelivery(delivery);
-    return ResponseEntity.ok(newDelivery);
+
+    DeliveryResponse newDeliveryResponse = new DeliveryResponse();
+    newDeliveryResponse.createResponseByDeliveryEntity(newDelivery);
+
+    return ResponseEntity.ok(newDeliveryResponse);
   }
 
   /** addVideo method.*/
@@ -48,8 +52,9 @@ public class DeliveryController {
   public ResponseEntity<Delivery> addVideo(@RequestBody VideoDto video) throws IOException {
     VideoNameMiddleware.isValidName(video.getVideoName());
 
-    Delivery response = deliveryService.addVideo(video);
-    return ResponseEntity.ok(response);
+    Delivery delivery = deliveryService.addVideo(video);
+
+    return ResponseEntity.ok(delivery);
   }
 
   /** getAllVideos method.*/
@@ -69,8 +74,8 @@ public class DeliveryController {
   /** getVideoDetails method.*/
   @GetMapping("/video/{id}")
   public ResponseEntity<VideoDetailsResponse> getVideoDetails(@PathVariable("id") Long id) {
-
     Video video = deliveryService.getVideoById(id);
+
     VideoDetailsResponse videoDetailsResponse = new VideoDetailsResponse();
     videoDetailsResponse.createResponseByVideoEntity(video);
 
@@ -93,13 +98,10 @@ public class DeliveryController {
 
   /** getDeliveryById method.*/
   @GetMapping("/{id}")
-  public ResponseEntity<DeliveryResponse> getDeliveryById(@PathVariable("id") Long id) {
+  public ResponseEntity<Delivery> getDeliveryById(@PathVariable("id") Long id) {
     Delivery delivery = deliveryService.getDeliveryById(id);
 
-    DeliveryResponse deliveryResponse = new DeliveryResponse();
-    deliveryResponse.createResponseByDeliveryEntity(delivery);
-
-    return ResponseEntity.ok(deliveryResponse);
+    return ResponseEntity.ok(delivery);
   }
 
   /** removeDelivery method.*/
@@ -112,12 +114,16 @@ public class DeliveryController {
 
   /** updateDelivery method.*/
   @PutMapping("/update/{id}")
-  public ResponseEntity<Delivery> updateDelivery(@PathVariable("id") Long id,
+  public ResponseEntity<DeliveryResponse> updateDelivery(@PathVariable("id") Long id,
       @RequestBody DeliveryDto delivery) {
     DeliveryMiddleware.isValidDelivery(delivery);
 
     Delivery deliveryUpdated = deliveryService.updateDelivery(id, delivery);
-    return ResponseEntity.ok(deliveryUpdated);
+
+    DeliveryResponse deliveryUpdatedResponse = new DeliveryResponse();
+    deliveryUpdatedResponse.createResponseByDeliveryEntity(deliveryUpdated);
+
+    return ResponseEntity.ok(deliveryUpdatedResponse);
   }
 
 }
