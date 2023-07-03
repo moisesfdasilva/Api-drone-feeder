@@ -1,6 +1,7 @@
 package com.futureh.drone.feeder.controller;
 
 import com.futureh.drone.feeder.dto.DroneDto;
+import com.futureh.drone.feeder.middleware.DroneMiddleware;
 import com.futureh.drone.feeder.model.Drone;
 import com.futureh.drone.feeder.response.DroneResponse;
 import com.futureh.drone.feeder.service.DroneService;
@@ -30,6 +31,8 @@ public class DroneController {
   /** addDrone method.*/
   @PostMapping("/new")
   public ResponseEntity<Drone> addDrone(@RequestBody DroneDto drone) {
+    DroneMiddleware.isValidDrone(drone);
+
     Drone response = droneService.addDrone(drone);
     return ResponseEntity.ok(response);
   }
@@ -71,6 +74,8 @@ public class DroneController {
   @PutMapping("/update/{id}")
   public ResponseEntity<Drone> updateDrone(@PathVariable("id") Long id,
       @RequestBody DroneDto drone) {
+    DroneMiddleware.isValidDrone(drone);
+
     Drone droneUpdated = droneService.updateDrone(id, drone);
     return ResponseEntity.ok(droneUpdated);
   }

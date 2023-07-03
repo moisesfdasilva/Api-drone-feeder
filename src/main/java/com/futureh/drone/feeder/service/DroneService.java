@@ -1,6 +1,7 @@
 package com.futureh.drone.feeder.service;
 
 import com.futureh.drone.feeder.dto.DroneDto;
+import com.futureh.drone.feeder.exception.InputNotFoundException;
 import com.futureh.drone.feeder.model.Drone;
 import com.futureh.drone.feeder.repository.DroneRepository;
 import java.util.List;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class DroneService {
+
+  String droneIdNotFound = "Drone id not found.";
 
   @Autowired
   private DroneRepository droneRepository;
@@ -41,7 +44,13 @@ public class DroneService {
 
   /** getDroneById method.*/
   public Drone getDroneById(Long id) {
-    return droneRepository.findById(id).orElse(null);
+    Drone drone = droneRepository.findById(id).orElse(null);
+    if (drone != null) {
+      return drone;      
+    } else {
+      throw new InputNotFoundException(droneIdNotFound);
+    }
+
   }
 
   /** removeDrone method.*/
@@ -51,7 +60,7 @@ public class DroneService {
       droneRepository.delete(drone);
       return id;
     } else {
-      return null;
+      throw new InputNotFoundException(droneIdNotFound);
     }
   }
 
@@ -65,7 +74,7 @@ public class DroneService {
       droneRepository.save(droneUpdate);
       return droneRepository.save(droneUpdate);
     } else {
-      return null;
+      throw new InputNotFoundException(droneIdNotFound);
     }
   }
 
