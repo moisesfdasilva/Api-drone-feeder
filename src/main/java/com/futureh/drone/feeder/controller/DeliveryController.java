@@ -3,6 +3,7 @@ package com.futureh.drone.feeder.controller;
 import com.futureh.drone.feeder.dto.DeliveryDto;
 import com.futureh.drone.feeder.dto.VideoDto;
 import com.futureh.drone.feeder.middleware.DeliveryMiddleware;
+import com.futureh.drone.feeder.middleware.VideoNameMiddleware;
 import com.futureh.drone.feeder.model.Delivery;
 import com.futureh.drone.feeder.model.Video;
 import com.futureh.drone.feeder.response.DeliveryResponse;
@@ -45,6 +46,8 @@ public class DeliveryController {
   /** addVideo method.*/
   @PostMapping("/addVideo")
   public ResponseEntity<Delivery> addVideo(@RequestBody VideoDto video) throws IOException {
+    VideoNameMiddleware.isValidName(video.getVideoName());
+
     Delivery response = deliveryService.addVideo(video);
     return ResponseEntity.ok(response);
   }
@@ -111,6 +114,8 @@ public class DeliveryController {
   @PutMapping("/update/{id}")
   public ResponseEntity<Delivery> updateDelivery(@PathVariable("id") Long id,
       @RequestBody DeliveryDto delivery) {
+    DeliveryMiddleware.isValidDelivery(delivery);
+
     Delivery deliveryUpdated = deliveryService.updateDelivery(id, delivery);
     return ResponseEntity.ok(deliveryUpdated);
   }

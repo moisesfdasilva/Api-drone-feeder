@@ -101,7 +101,7 @@ public class DeliveryService {
       deliveryRepository.delete(delivery);
       return id;
     } else {
-      return null;
+      throw new InputNotFoundException("Delivery id not found.");
     }
   }
 
@@ -116,7 +116,7 @@ public class DeliveryService {
       deliveryUpdate.setWeightInKg(delivery.getWeightInKg());
       return deliveryRepository.save(deliveryUpdate);
     } else {
-      return null;
+      throw new InputNotFoundException("Delivery id not found.");
     }
   }
   
