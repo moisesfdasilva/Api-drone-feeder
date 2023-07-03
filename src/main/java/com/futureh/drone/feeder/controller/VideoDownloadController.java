@@ -42,7 +42,7 @@ public class VideoDownloadController {
     }
 
     String contentType = "application/octet-stream";
-    String headerValue = "attachment; fileName=\"" + resource.getFilename() + "\"";
+    String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
 
     return ResponseEntity.ok()
         .contentType(MediaType.parseMediaType(contentType))
