@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 public class VideoNameMiddleware {
 
   /**
-   * isValidName class.
+   * isValidName method.
    */
   public static void isValidName(String fileName) {
     if (fileName.isEmpty()) {

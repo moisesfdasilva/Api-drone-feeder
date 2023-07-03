@@ -2,6 +2,7 @@ package com.futureh.drone.feeder.controller;
 
 import com.futureh.drone.feeder.dto.DeliveryDto;
 import com.futureh.drone.feeder.dto.VideoDto;
+import com.futureh.drone.feeder.middleware.DeliveryMiddleware;
 import com.futureh.drone.feeder.model.Delivery;
 import com.futureh.drone.feeder.model.Video;
 import com.futureh.drone.feeder.response.DeliveryResponse;
@@ -35,8 +36,10 @@ public class DeliveryController {
   /** addDelivery method.*/
   @PostMapping("/new")
   public ResponseEntity<Delivery> addDelivery(@RequestBody DeliveryDto delivery) {
-    Delivery response = deliveryService.addDelivery(delivery);
-    return ResponseEntity.ok(response);
+    DeliveryMiddleware.isValidDelivery(delivery);
+
+    Delivery newDelivery = deliveryService.addDelivery(delivery);
+    return ResponseEntity.ok(newDelivery);
   }
 
   /** addVideo method.*/
