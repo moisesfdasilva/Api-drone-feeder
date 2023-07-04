@@ -35,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class DeliveryController {
 
   String videoAlreadyExists = "The video already exists.";
+  String deliveryHasntVideo = "The delivery hasn't video";
 
   @Autowired
   private DeliveryService deliveryService;
@@ -62,6 +63,31 @@ public class DeliveryController {
     Video video = deliveryService.getVideoByName(videoName);
     if (video != null) {
       throw new ConflictWithInputDataException(videoAlreadyExists);
+    }
+
+    deliveryService.saveFile(videoName, multipartFile);
+
+    Long size = multipartFile.getSize();
+    Video newVideo = new Video(videoName, size);
+
+    Delivery deliveryUpdated = deliveryService.addVideo(id, newVideo);
+    DeliveryResponse deliveryUpdatedResponse = new DeliveryResponse();
+    deliveryUpdatedResponse.createResponseByDeliveryEntity(deliveryUpdated);
+
+    return ResponseEntity.ok(deliveryUpdatedResponse);
+  }
+
+  /** updateVideo method. */
+  @PutMapping("/updateVideo/{id}")
+  public ResponseEntity<DeliveryResponse> updateVideo(@PathVariable("id") Long id,
+      @RequestParam("video") MultipartFile multipartFile) throws IOException {
+    String videoName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
+    VideoNameMiddleware.isValidName(videoName);
+
+    Delivery delivery = deliveryService.getDeliveryById(id);
+    Video video = delivery.getVideo();
+    if (video == null) {
+      throw new ConflictWithInputDataException(deliveryHasntVideo);
     }
 
     deliveryService.saveFile(videoName, multipartFile);
