@@ -35,7 +35,6 @@ public class VideoNameMiddleware {
     }
 
     String date = fileName.substring(5, fileName.length() - 4);
-    System.out.println(date);
     try {
       DateTimeFormatter dateFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd-HHmmss");
       LocalDate.parse(date, dateFormat);
