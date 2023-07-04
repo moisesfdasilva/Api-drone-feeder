@@ -1,18 +1,29 @@
 package com.futureh.drone.feeder.service;
 
 import com.futureh.drone.feeder.dto.DeliveryDto;
-import com.futureh.drone.feeder.dto.VideoDto;
+import com.futureh.drone.feeder.exception.InputNotFoundException;
+import com.futureh.drone.feeder.exception.IntServerErrorInVideoFinding;
+import com.futureh.drone.feeder.exception.WrongInputDataException;
 import com.futureh.drone.feeder.model.Delivery;
 import com.futureh.drone.feeder.model.Drone;
 import com.futureh.drone.feeder.model.Video;
 import com.futureh.drone.feeder.repository.DeliveryRepository;
 import com.futureh.drone.feeder.repository.VideoRepository;
 import com.futureh.drone.feeder.util.DeliveryStatus;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
+import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * DeliveryService class.
@@ -20,11 +31,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class DeliveryService {
 
-  @Autowired
-  private DeliveryRepository deliveryRepository;
+  String paramWithoutVideo = "The param don't have a video (Param must have a video).";
+  String videoIdNotFound = "Video id not found.";
+  String deliveryIdNotFound = "Delivery id not found.";
 
   @Autowired
-  private VideoDownloadService videoDownloadService;
+  private DeliveryRepository deliveryRepository;
 
   @Autowired
   private DroneService droneService;
@@ -41,36 +53,64 @@ public class DeliveryService {
     Float weightInKg = delivery.getWeightInKg();
     Delivery newDelivery = deliveryRepository.save(
         new Delivery(address, zipCode, longitude, latitude, weightInKg));
+
     return newDelivery;
   }
 
-  /** addVideo method. */
-  public Delivery addVideo(VideoDto video) throws IOException {
-    String videoName = video.getVideoName();
-    Resource resource = videoDownloadService.getVideoAsResource(videoName);
-    Long size = resource.contentLength();
-    Video newVideo = new Video(videoName, size);
+  /** getVideoByName method.*/
+  public Video getVideoByName(String videoName) {
+    List<Video> videos = videoRepository.findAll();
+    Video video = videos.stream()
+        .filter(vdo -> vdo.getFileName().equals(videoName))
+        .findAny().orElse(null);
+    return video;
+  }
 
+  /** saveFile method.*/
+  public String saveFile(String videoName, MultipartFile multipartFile) throws IOException {
+    Path uploadDirectory = Paths.get("videos-uploads");
+    String uri = "/drone/downloadVideo/" + videoName;
+
+    try {
+      InputStream inputStream = multipartFile.getInputStream();
+      Path videoPath = uploadDirectory.resolve(videoName);
+      Files.copy(inputStream, videoPath, StandardCopyOption.REPLACE_EXISTING);
+    } catch (IOException err) {
+      throw new WrongInputDataException(paramWithoutVideo);
+    }
+
+    return uri;
+  }
+
+  /** addVideo method.*/
+  public Delivery addVideo(Long id, Video video) throws IOException {
+    String videoName = video.getFileName();
     String droneName = videoName.substring(0, 4);
     Drone drone = droneService.getDroneByName(droneName);
-    newVideo.setDrone(drone);
+    video.setDrone(drone);
 
-    Long deliveryId = video.getDeliveryId();
-    Delivery delivery = deliveryRepository.findById(deliveryId).orElse(null);
-    delivery.setVideo(newVideo);
+    Delivery delivery = this.getDeliveryById(id);
+
+    delivery.setVideo(video);
     delivery.setStatus(DeliveryStatus.DELIVERED);
     Delivery deliveryUpdate = deliveryRepository.save(delivery);
+
     return deliveryUpdate;
   }
 
-  /** getAllVideos method. */
+  /** getAllVideos method.*/
   public List<Video> getAllVideos() {
     return videoRepository.findAll();
   }
 
-  /** getVideoById method. */
+  /** getVideoById method.*/
   public Video getVideoById(Long id) {
-    return videoRepository.findById(id).orElse(null);
+    Video video = videoRepository.findById(id).orElse(null);
+    if (video != null) {
+      return video;      
+    } else {
+      throw new InputNotFoundException(videoIdNotFound);
+    }
   }
 
   /** getAllDeliveries method.*/
@@ -80,7 +120,12 @@ public class DeliveryService {
 
   /** getDeliveryById method.*/
   public Delivery getDeliveryById(Long id) {
-    return deliveryRepository.findById(id).orElse(null);
+    Delivery delivery = deliveryRepository.findById(id).orElse(null);
+    if (delivery != null) {
+      return delivery;      
+    } else {
+      throw new InputNotFoundException(deliveryIdNotFound);
+    }
   }
 
   /** removeDelivery method.*/
@@ -90,7 +135,7 @@ public class DeliveryService {
       deliveryRepository.delete(delivery);
       return id;
     } else {
-      return null;
+      throw new InputNotFoundException(deliveryIdNotFound);
     }
   }
 
@@ -105,8 +150,47 @@ public class DeliveryService {
       deliveryUpdate.setWeightInKg(delivery.getWeightInKg());
       return deliveryRepository.save(deliveryUpdate);
     } else {
+      throw new InputNotFoundException(deliveryIdNotFound);
+    }
+  }
+
+  /** getVideoAsResource method.*/
+  public Resource getVideoAsResource(String videoName) throws IOException {
+    Path uploadDirectory = Paths.get("videos-uploads");
+    Stream<Path> files = Files.list(uploadDirectory);
+    Path foundVideo = files.filter(video -> video.getFileName().toString().equals(videoName))
+        .findAny().orElse(null);
+
+    files.close();
+
+    if (foundVideo != null) {
+      return new UrlResource(foundVideo.toUri());
+    } else {
       return null;
     }
   }
-  
+
+  /** deleteVideo method.*/
+  public Delivery deleteVideo(Long id, String videoName) throws IOException {
+    Path uploadDirectory = Paths.get("videos-uploads");
+    Stream<Path> files = Files.list(uploadDirectory);
+    Path videoPath = files.filter(video -> video.getFileName().toString().equals(videoName))
+        .findAny().orElse(null);
+    File myObj = new File(videoPath.toUri());
+    files.close();
+
+    if (myObj.delete()) {
+      Delivery deliveryUpdate = deliveryRepository.findById(id).orElse(null);
+      if (deliveryUpdate != null) {
+        deliveryUpdate.setVideo(null);
+        deliveryUpdate.setStatus(DeliveryStatus.TO_DELIVER);
+        return deliveryRepository.save(deliveryUpdate);
+      } else {
+        throw new InputNotFoundException(deliveryIdNotFound);
+      }
+    } else {
+      throw new IntServerErrorInVideoFinding();
+    }
+  }
+
 }

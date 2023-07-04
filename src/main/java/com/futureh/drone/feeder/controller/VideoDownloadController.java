@@ -1,7 +1,7 @@
 package com.futureh.drone.feeder.controller;
 
+import com.futureh.drone.feeder.exception.InputNotFoundException;
 import com.futureh.drone.feeder.exception.IntServerErrorInVideoFinding;
-import com.futureh.drone.feeder.exception.VideoNotFoundException;
 import com.futureh.drone.feeder.service.VideoDownloadService;
 import java.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +37,12 @@ public class VideoDownloadController {
     }
 
     if (resource == null) {
-      throw new VideoNotFoundException();
+      throw new InputNotFoundException("Video not found."
+          + " Try to use the standard video name (DRON-yyyy-MM-dd-HHmmss.mp4).");
     }
 
     String contentType = "application/octet-stream";
-    String headerValue = "attachment; fileName=\"" + resource.getFilename() + "\"";
+    String headerValue = "attachment; filename=\"" + resource.getFilename() + "\"";
 
     return ResponseEntity.ok()
         .contentType(MediaType.parseMediaType(contentType))

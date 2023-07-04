@@ -1,9 +1,9 @@
 package com.futureh.drone.feeder.controller;
 
-import com.futureh.drone.feeder.exception.InputFileException;
-import com.futureh.drone.feeder.exception.InputVideoNameException;
+import com.futureh.drone.feeder.exception.ConflictWithInputDataException;
+import com.futureh.drone.feeder.exception.InputNotFoundException;
 import com.futureh.drone.feeder.exception.IntServerErrorInVideoFinding;
-import com.futureh.drone.feeder.exception.VideoNotFoundException;
+import com.futureh.drone.feeder.exception.WrongInputDataException;
 import java.util.HashMap;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,31 +26,13 @@ public class ExceptionControllerManager {
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
   }
 
-  /** HandleInputFileException method.*/
-  @ExceptionHandler(InputFileException.class)
-  public ResponseEntity<HashMap<String, String>> handleInputFileException(
-      InputFileException exception) {
+  /** HandleInputObjetctException method.*/
+  @ExceptionHandler(WrongInputDataException.class)
+  public ResponseEntity<HashMap<String, String>> handleInputObjetctException(
+      WrongInputDataException exception) {
     HashMap<String, String> message = new HashMap<String, String>();
     message.put("error", exception.getMessage());
     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-  }
-
-  /** HandleInputVideoNameException method.*/
-  @ExceptionHandler(InputVideoNameException.class)
-  public ResponseEntity<HashMap<String, String>> handleInputVideoNameException(
-      InputVideoNameException exception) {
-    HashMap<String, String> message = new HashMap<String, String>();
-    message.put("error", exception.getMessage());
-    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(message);
-  }
-
-  /** HandleVideoNotFoundException method.*/
-  @ExceptionHandler(VideoNotFoundException.class)
-  public ResponseEntity<HashMap<String, String>> handleVideoNotFoundException(
-      VideoNotFoundException exception) {
-    HashMap<String, String> message = new HashMap<String, String>();
-    message.put("error", exception.getMessage());
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
   }
 
   /** HandleIntServerErrorInVideoFinding method.*/
@@ -60,6 +42,24 @@ public class ExceptionControllerManager {
     HashMap<String, String> message = new HashMap<String, String>();
     message.put("error", exception.getMessage());
     return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(message);
+  }
+
+  /** HandleInputNotFoundException method.*/
+  @ExceptionHandler(InputNotFoundException.class)
+  public ResponseEntity<HashMap<String, String>> handleInputNotFoundException(
+      InputNotFoundException exception) {
+    HashMap<String, String> message = new HashMap<String, String>();
+    message.put("error", exception.getMessage());
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(message);
+  }
+
+  /** HandleConflictWithInputData method.*/
+  @ExceptionHandler(ConflictWithInputDataException.class)
+  public ResponseEntity<HashMap<String, String>> handleConflictWithInputData(
+      ConflictWithInputDataException exception) {
+    HashMap<String, String> message = new HashMap<String, String>();
+    message.put("error", exception.getMessage());
+    return ResponseEntity.status(HttpStatus.CONFLICT).body(message);
   }
 
 }

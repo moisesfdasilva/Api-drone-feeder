@@ -45,7 +45,7 @@ class VideoDownloadControllerTest {
         get("/drone/downloadVideo/" + fileName)
     ).andExpect(status().isOk())
         .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION,
-            "attachment; fileName=\"" + videoResource.getFilename() + "\""))
+            "attachment; filename=\"" + videoResource.getFilename() + "\""))
         .andExpect(content().bytes(fileName.getBytes()));
   }
 

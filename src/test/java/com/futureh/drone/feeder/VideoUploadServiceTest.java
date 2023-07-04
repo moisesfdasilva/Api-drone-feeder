@@ -3,7 +3,7 @@ package com.futureh.drone.feeder;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.futureh.drone.feeder.exception.InputFileException;
+import com.futureh.drone.feeder.exception.WrongInputDataException;
 import com.futureh.drone.feeder.service.VideoUploadService;
 import java.io.IOException;
 import java.io.InputStream;
@@ -55,7 +55,7 @@ class VideoUploadServiceTest {
     try (MockedStatic<Files> utilities = Mockito.mockStatic(Files.class)) {
       utilities.when(() -> Files.copy(Mockito.any(InputStream.class), Mockito.any(Path.class),
           Mockito.any(CopyOption.class))).thenThrow(IOException.class);
-      assertThrows(InputFileException.class,
+      assertThrows(WrongInputDataException.class,
           () -> videoUploadService.saveFile(fileName, multipartFile));
     }
   }

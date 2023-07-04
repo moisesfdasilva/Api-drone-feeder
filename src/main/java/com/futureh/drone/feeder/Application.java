@@ -35,10 +35,10 @@ public class Application implements CommandLineRunner {
     Drone thirdDrone = new Drone("G305", "Onixstar Hydra - 12", 12f);
     droneRepository.saveAll(Arrays.asList(firstDrone, secondDrone, thirdDrone));
 
-    String address1 = "Estrada da Pedra Preta, 222 - Vargem Grande, Rio de Janeiro - RJ";
-    String zipCode1 = "22783-415";
-    String longitude1 = "-22.970952";
-    String latitude1 = "-43.478019";
+    String address1 = "Praça Mauá, 1 - Centro, Rio de Janeiro - RJ";
+    String zipCode1 = "20081-240";
+    String longitude1 = "-22.895642";
+    String latitude1 = "-43.180038";
     Float weightInKg1 = 5.2f;
     Delivery firstDelivery = new Delivery(address1, zipCode1, longitude1, latitude1, weightInKg1);
 
@@ -49,10 +49,10 @@ public class Application implements CommandLineRunner {
     firstDelivery.setVideo(firstVideo);
     firstDelivery.setStatus(DeliveryStatus.DELIVERED);
 
-    String address2 = "Estrada do Camorim, 1842 - Camorim, Rio de Janeiro - RJ";
-    String zipCode2 = "22780-070";
-    String longitude2 = "-22.969865";
-    String latitude2 = "-43.431411";
+    String address2 = "Praça Pio X, s/n - Centro, Rio de Janeiro - RJ";
+    String zipCode2 = "20040-020";
+    String longitude2 = "-22.900698";
+    String latitude2 = "-43.177297";
     Float weightInKg2 = 2.5f;
     Delivery secondDelivery = new Delivery(address2, zipCode2, longitude2, latitude2, weightInKg2);
 

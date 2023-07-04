@@ -1,6 +1,6 @@
 package com.futureh.drone.feeder.service;
 
-import com.futureh.drone.feeder.exception.InputFileException;
+import com.futureh.drone.feeder.exception.WrongInputDataException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -27,9 +27,8 @@ public class VideoUploadService {
       InputStream inputStream = multipartFile.getInputStream();
       Path filePath = uploadDirectory.resolve(fileName);
       Files.copy(inputStream, filePath, StandardCopyOption.REPLACE_EXISTING);
-      // Save file in DB -> uri
     } catch (IOException err) {
-      throw new InputFileException();
+      throw new WrongInputDataException("The param don't have a video (Param must have a video).");
     }
 
     return uri;
