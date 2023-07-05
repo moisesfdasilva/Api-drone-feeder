@@ -5,6 +5,7 @@ import com.futureh.drone.feeder.middleware.DroneMiddleware;
 import com.futureh.drone.feeder.model.Drone;
 import com.futureh.drone.feeder.response.DroneResponse;
 import com.futureh.drone.feeder.service.DroneService;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,9 +69,13 @@ public class DroneController {
 
   /** removeDrone method.*/
   @DeleteMapping("/delete/{id}")
-  public ResponseEntity<String> removeDrone(@PathVariable("id") Long id) {
+  public ResponseEntity<HashMap<String, String>> removeDrone(@PathVariable("id") Long id) {
     Long idRemoved = droneService.removeDrone(id);
-    String response = "Id " + idRemoved + " has been removed.";
+
+    HashMap<String, String> response = new HashMap<String, String>();
+    String message = "Id " + idRemoved + " has been removed.";
+    response.put("message", message);
+
     return ResponseEntity.ok(response);
   }
 

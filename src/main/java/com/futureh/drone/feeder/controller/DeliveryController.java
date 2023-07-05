@@ -180,7 +180,7 @@ public class DeliveryController {
         .body(resource);
   }
 
-  /** deleteVideo method. */
+  /** deleteVideo method.*/
   @DeleteMapping("/{id}/deleteVideo")
   public ResponseEntity<DeliveryResponse> deleteVideo(@PathVariable("id") Long id)
       throws IOException {
