@@ -18,7 +18,6 @@ public class Video {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String fileName;
-  private String downloadUri;
   private Long size;
 
   @ManyToOne
@@ -30,7 +29,6 @@ public class Video {
   /** Video constructor method. */
   public Video(String fileName, Long size) {
     this.fileName = fileName;
-    this.downloadUri = "/drone/downloadVideo/" + fileName;
     this.size = size;
   }
 
@@ -48,14 +46,6 @@ public class Video {
 
   public void setFileName(String fileName) {
     this.fileName = fileName;
-  }
-
-  public String getDownloadUri() {
-    return downloadUri;
-  }
-
-  public void setDownloadUri(String downloadUri) {
-    this.downloadUri = downloadUri;
   }
 
   public Long getSize() {

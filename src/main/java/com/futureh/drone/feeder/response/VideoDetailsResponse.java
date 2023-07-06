@@ -9,7 +9,6 @@ public class VideoDetailsResponse {
 
   private Long id;
   private String fileName;
-  private String downloadUri;
   private Long size;
   private DroneResponse drone;
 
@@ -27,14 +26,6 @@ public class VideoDetailsResponse {
 
   public void setFileName(String fileName) {
     this.fileName = fileName;
-  }
-
-  public String getDownloadUri() {
-    return downloadUri;
-  }
-
-  public void setDownloadUri(String downloadUri) {
-    this.downloadUri = downloadUri;
   }
 
   public Long getSize() {
@@ -57,7 +48,6 @@ public class VideoDetailsResponse {
   public void createResponseByVideoEntity(Video video) {
     setId(video.getId());
     setFileName(video.getFileName());
-    setDownloadUri(video.getDownloadUri());
     setSize(video.getSize());
 
     DroneResponse droneResponse = new DroneResponse();
