@@ -5,11 +5,20 @@ package com.futureh.drone.feeder.dto;
  */
 public class DeliveryDto {
 
+  private String receiverName;
   private String address;
   private String zipCode;
   private String longitude;
   private String latitude;
   private Float weightInKg;
+
+  public String getReceiverName() {
+    return receiverName;
+  }
+
+  public void setReceiverName(String receiverName) {
+    this.receiverName = receiverName;
+  }
 
   public String getAddress() {
     return address;

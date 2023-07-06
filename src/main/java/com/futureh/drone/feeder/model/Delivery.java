@@ -19,6 +19,7 @@ public class Delivery {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+  private String receiverName;
   private String address;
   private String zipCode;
   private String longitude;
@@ -33,8 +34,9 @@ public class Delivery {
   public Delivery() { }
 
   /** Delivery constructor method. */
-  public Delivery(String address, String zipCode, String longitude, String latitude,
-      Float weightInKg) {
+  public Delivery(String address, String receiverName, String zipCode, String longitude,
+      String latitude, Float weightInKg) {
+    this.receiverName = receiverName;
     this.address = address;
     this.zipCode = zipCode;
     this.longitude = longitude;
@@ -49,6 +51,14 @@ public class Delivery {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public String getReceiverName() {
+    return receiverName;
+  }
+
+  public void setReceiverName(String receiverName) {
+    this.receiverName = receiverName;
   }
 
   public String getAddress() {

@@ -36,11 +36,13 @@ public class Application implements CommandLineRunner {
     droneRepository.saveAll(Arrays.asList(firstDrone, secondDrone, thirdDrone));
 
     String address1 = "Praça Mauá, 1 - Centro, Rio de Janeiro - RJ";
+    String receiverName1 = "Johann Sebastian Bach";
     String zipCode1 = "20081-240";
     String longitude1 = "-22.895642";
     String latitude1 = "-43.180038";
     Float weightInKg1 = 5.2f;
-    Delivery firstDelivery = new Delivery(address1, zipCode1, longitude1, latitude1, weightInKg1);
+    Delivery firstDelivery = new Delivery(address1, receiverName1, zipCode1, longitude1,
+        latitude1, weightInKg1);
 
     String fileName = "G305-2023-06-12-191255.mp4";
     Long size = 2861955L;
@@ -50,11 +52,13 @@ public class Application implements CommandLineRunner {
     firstDelivery.setStatus(DeliveryStatus.DELIVERED);
 
     String address2 = "Praça Pio X, s/n - Centro, Rio de Janeiro - RJ";
+    String receiverName2 = "Wolfgang Amadeus Mozart";
     String zipCode2 = "20040-020";
     String longitude2 = "-22.900698";
     String latitude2 = "-43.177297";
     Float weightInKg2 = 2.5f;
-    Delivery secondDelivery = new Delivery(address2, zipCode2, longitude2, latitude2, weightInKg2);
+    Delivery secondDelivery = new Delivery(address2, receiverName2, zipCode2, longitude2,
+        latitude2, weightInKg2);
 
     deliveryRepository.saveAll(Arrays.asList(firstDelivery, secondDelivery));
   }
