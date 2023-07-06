@@ -68,9 +68,8 @@ public class DeliveryService {
   }
 
   /** saveFile method.*/
-  public String saveFile(String videoName, MultipartFile multipartFile) throws IOException {
+  public void saveFile(String videoName, MultipartFile multipartFile) throws IOException {
     Path uploadDirectory = Paths.get("videos-uploads");
-    String uri = "/drone/downloadVideo/" + videoName;
 
     try {
       InputStream inputStream = multipartFile.getInputStream();
@@ -79,8 +78,6 @@ public class DeliveryService {
     } catch (IOException err) {
       throw new WrongInputDataException(paramWithoutVideo);
     }
-
-    return uri;
   }
 
   /** addVideo method.*/

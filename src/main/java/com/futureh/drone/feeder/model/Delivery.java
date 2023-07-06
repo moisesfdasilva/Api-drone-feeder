@@ -22,8 +22,8 @@ public class Delivery {
   private String receiverName;
   private String address;
   private String zipCode;
-  private String longitude;
   private String latitude;
+  private String longitude;
   private DeliveryStatus status;
   private Float weightInKg;
 
@@ -34,13 +34,13 @@ public class Delivery {
   public Delivery() { }
 
   /** Delivery constructor method. */
-  public Delivery(String address, String receiverName, String zipCode, String longitude,
-      String latitude, Float weightInKg) {
+  public Delivery(String receiverName, String address, String zipCode, String latitude,
+      String longitude, Float weightInKg) {
     this.receiverName = receiverName;
     this.address = address;
     this.zipCode = zipCode;
-    this.longitude = longitude;
     this.latitude = latitude;
+    this.longitude = longitude;
     this.status = DeliveryStatus.TO_DELIVER;
     this.weightInKg = weightInKg;
   }
@@ -77,20 +77,20 @@ public class Delivery {
     this.zipCode = zipCode;
   }
 
-  public String getLongitude() {
-    return longitude;
-  }
-
-  public void setLongitude(String longitude) {
-    this.longitude = longitude;
-  }
-
   public String getLatitude() {
     return latitude;
   }
 
   public void setLatitude(String latitude) {
     this.latitude = latitude;
+  }
+
+  public String getLongitude() {
+    return longitude;
+  }
+
+  public void setLongitude(String longitude) {
+    this.longitude = longitude;
   }
 
   public DeliveryStatus getStatus() {

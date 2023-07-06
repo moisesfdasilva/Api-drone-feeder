@@ -97,7 +97,7 @@ public class DeliveryController {
   }
 
   /** getVideoDetails method.*/
-  @GetMapping("/{id}/video")
+  @GetMapping("/video/{id}")
   public ResponseEntity<VideoDetailsResponse> getVideoDetails(@PathVariable("id") Long id) {
     Video video = deliveryService.getVideoById(id);
 
