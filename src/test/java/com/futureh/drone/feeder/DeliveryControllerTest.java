@@ -7,19 +7,24 @@ import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.futureh.drone.feeder.dto.DeliveryDto;
+import com.futureh.drone.feeder.mock.VideoDownloadControllerMock;
 import com.futureh.drone.feeder.model.Delivery;
 import com.futureh.drone.feeder.model.Drone;
 import com.futureh.drone.feeder.model.Video;
 import com.futureh.drone.feeder.service.DeliveryService;
+import com.futureh.drone.feeder.util.DeliveryStatus;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +36,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
@@ -96,7 +103,7 @@ class DeliveryControllerTest {
 
     this.mockMvc.perform(post("/delivery/new")
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(delivery))
-    ).andExpect(status().isOk())
+    ).andExpect(status().isCreated())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
     .andExpect(jsonPath("$.id", is(delivery.getId().intValue())))
     .andExpect(jsonPath("$.receiverName", is(delivery.getReceiverName())))
@@ -120,16 +127,16 @@ class DeliveryControllerTest {
 
     Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
+    delivery.setId(dlvIdOk);
     Video video = new Video(videoNameOk, videoSizeOk);
     video.setId(videoIdOk);
     delivery.setVideo(video);
-    delivery.setId(dlvIdOk);
 
     when(deliveryService.addVideo(any(Long.class), any(Video.class))).thenReturn(delivery);
 
     this.mockMvc.perform(
         multipart("/delivery/" + dlvIdOk + "/uploadVideo").file(multipartFile)
-    ).andExpect(status().isOk())
+    ).andExpect(status().isCreated())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
     .andExpect(jsonPath("$.id", is(delivery.getId().intValue())))
     .andExpect(jsonPath("$.receiverName", is(delivery.getReceiverName())))
@@ -246,6 +253,7 @@ class DeliveryControllerTest {
     drone.setId(drnIdOk);
     video.setDrone(drone);
     delivery.setVideo(video);
+    delivery.setStatus(DeliveryStatus.DELIVERED);
 
     when(deliveryService.getDeliveryById(dlvIdOk)).thenReturn(delivery);
 
@@ -259,14 +267,111 @@ class DeliveryControllerTest {
         .andExpect(jsonPath("$.latitude", is(delivery.getLatitude())))
         .andExpect(jsonPath("$.longitude", is(delivery.getLongitude())))
         .andExpect(jsonPath("$.status", is(delivery.getStatus().toString())))
-        .andExpect(jsonPath("$.weightInKg", is(closeTo(delivery.getWeightInKg(), 0.0001))));
-    // --------------------------------------------------------------------------------------
-    // VER A POSSIBILIDADE DE REFATORAR O OBJETO DRONE:
-    //.andExpect(jsonPath("$.video", is(delivery.getVideo())));
-    //"video":{"id":1, "fileName":"BR01-2022-05-30-101010.mp4", "size":8888938,
-    //   "drone":{"id":1, "name":"BR01", "model":"Embraer XYZ 777", "capacityWeightInKg":10.5,
-    //     "videos":null}}
-    // --------------------------------------------------------------------------------------
+        .andExpect(jsonPath("$.weightInKg", is(closeTo(delivery.getWeightInKg(), 0.0001))))
+        .andExpect(jsonPath("$.video.id", is(delivery.getVideo().getId().intValue())))
+        .andExpect(jsonPath("$.video.fileName", is(delivery.getVideo().getFileName())))
+        .andExpect(jsonPath("$.video.size", is(delivery.getVideo().getSize().intValue())))
+        .andExpect(jsonPath("$.video.droneName", is(delivery.getVideo().getDrone().getName())));
+  }
+
+  @Test
+  @Order(7)
+  @DisplayName("7. A rota DELETE /delivery/delete/{id}, ----> OK.")
+  public void removeDeliveryOk() throws Exception {
+    when(deliveryService.removeDelivery(dlvIdOk)).thenReturn(dlvIdOk);
+
+    this.mockMvc.perform(delete("/delivery/delete/" + dlvIdOk))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.message", is("Delivery id " + dlvIdOk + " has been removed.")));
+  }
+
+  @Test
+  @Order(8)
+  @DisplayName("8. A rota PUT /delivery/update/{id}, ----> OK.")
+  public void updateDeliveryOk() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvReceiverNameOkToo);
+    deliveryDto.setAddress(dlvAddressOkToo);
+    deliveryDto.setZipCode(dlvZipCodeOkToo);
+    deliveryDto.setLatitude(dlvLatitudeOkToo);
+    deliveryDto.setLongitude(dlvLongitudeOkToo);
+    deliveryDto.setWeightInKg(dlvWeightInKgOkToo);
+
+    Delivery delivery = new Delivery(deliveryDto.getReceiverName(), deliveryDto.getAddress(),
+        deliveryDto.getZipCode(), deliveryDto.getLatitude(), deliveryDto.getLongitude(),
+        deliveryDto.getWeightInKg());
+    delivery.setId(dlvIdOk);
+
+    when(deliveryService.updateDelivery(any(Long.class), any(DeliveryDto.class)))
+        .thenReturn(delivery);
+
+    this.mockMvc.perform(put("/delivery/update/" + dlvIdOk)
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(delivery))
+    ).andExpect(status().isOk())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.id", is(delivery.getId().intValue())))
+    .andExpect(jsonPath("$.receiverName", is(delivery.getReceiverName())))
+    .andExpect(jsonPath("$.address", is(delivery.getAddress())))
+    .andExpect(jsonPath("$.zipCode", is(delivery.getZipCode())))
+    .andExpect(jsonPath("$.latitude", is(delivery.getLatitude())))
+    .andExpect(jsonPath("$.longitude", is(delivery.getLongitude())))
+    .andExpect(jsonPath("$.status", is(delivery.getStatus().toString())))
+    .andExpect(jsonPath("$.weightInKg", is(closeTo(delivery.getWeightInKg(), 0.0001))));
+  }
+
+  @Test
+  @Order(9)
+  @DisplayName("9. A rota GET /delivery/{id}/downloadVideo, ----> OK.")
+  public void downloadVideoOk() throws Exception {
+    Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
+        dlvLongitudeOk, dlvWeightInKgOk);
+    delivery.setId(dlvIdOk);
+    Video video = new Video(videoNameOk, videoSizeOk);
+    video.setId(videoIdOk);
+    delivery.setVideo(video);
+    when(deliveryService.getDeliveryById(dlvIdOk)).thenReturn(delivery);
+
+    Resource videoResource = VideoDownloadControllerMock.getMockedResource(videoNameOk);
+    when(deliveryService.getVideoAsResource(videoNameOk)).thenReturn(videoResource);
+
+    this.mockMvc.perform(
+        get("/delivery/" + dlvIdOk + "/downloadVideo")
+    ).andExpect(status().isOk())
+        .andExpect(header().string(HttpHeaders.CONTENT_DISPOSITION,
+            "attachment; filename=\"" + videoResource.getFilename() + "\""))
+        .andExpect(content().bytes(videoNameOk.getBytes()));
+  }
+  
+  @Test
+  @Order(10)
+  @DisplayName("10. A rota DELETE /delivery/{id}/deleteVideo, ----> OK.")
+  public void deleteVideoVideoOk() throws Exception {
+    Delivery deliveryA = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
+        dlvLongitudeOk, dlvWeightInKgOk);
+    deliveryA.setId(dlvIdOk);
+    Video video = new Video(videoNameOk, videoSizeOk);
+    video.setId(videoIdOk);
+    deliveryA.setVideo(video);
+    when(deliveryService.getDeliveryById(dlvIdOk)).thenReturn(deliveryA);
+
+    Delivery deliveryB = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
+        dlvLongitudeOk, dlvWeightInKgOk);
+    deliveryB.setId(dlvIdOk);
+    when(deliveryService.deleteVideo(dlvIdOk, videoNameOk)).thenReturn(deliveryB);
+
+    this.mockMvc.perform(delete("/delivery/" + dlvIdOk + "/deleteVideo"))
+        .andExpect(status().isOk())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.id", is(deliveryA.getId().intValue())))
+        .andExpect(jsonPath("$.receiverName", is(deliveryA.getReceiverName())))
+        .andExpect(jsonPath("$.address", is(deliveryA.getAddress())))
+        .andExpect(jsonPath("$.zipCode", is(deliveryA.getZipCode())))
+        .andExpect(jsonPath("$.latitude", is(deliveryA.getLatitude())))
+        .andExpect(jsonPath("$.longitude", is(deliveryA.getLongitude())))
+        .andExpect(jsonPath("$.status", is(deliveryA.getStatus().toString())))
+        .andExpect(jsonPath("$.weightInKg", is(closeTo(deliveryA.getWeightInKg(), 0.0001))))
+        .andExpect(jsonPath("$.videoName", is(vdoNameNone)));
   }
 
   static String asJsonString(Object obj) {
