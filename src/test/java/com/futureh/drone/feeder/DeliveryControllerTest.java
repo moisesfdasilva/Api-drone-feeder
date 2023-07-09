@@ -2,6 +2,7 @@ package com.futureh.drone.feeder;
 
 import static org.hamcrest.Matchers.closeTo;
 import static org.hamcrest.Matchers.containsInRelativeOrder;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
@@ -19,12 +20,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.futureh.drone.feeder.dto.DeliveryDto;
+import com.futureh.drone.feeder.exception.InputNotFoundException;
 import com.futureh.drone.feeder.mock.VideoDownloadControllerMock;
 import com.futureh.drone.feeder.model.Delivery;
 import com.futureh.drone.feeder.model.Drone;
 import com.futureh.drone.feeder.model.Video;
 import com.futureh.drone.feeder.service.DeliveryService;
 import com.futureh.drone.feeder.util.DeliveryStatus;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -67,6 +70,13 @@ class DeliveryControllerTest {
   String dlvLatitudeOkToo = "-22.910948";
   String dlvLongitudeOkToo = "-43.167084";
   Float dlvWeightInKgOkToo = 6.9F;
+  String dlvInvalidReceiverName = "Invalid Receiver Name aaaaaaaaaaa";
+  String dlvInvalidAddress = "Invalid Address aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  String dlvInvalidZipCode = "0";
+  String dlvInvalidLatitude = "01234";
+  String dlvInvalidLongitude = "01234";
+  Float dlvInvalidWeight = 12.01F;
 
   Long videoIdOk = 1L;
   String videoNameOk = "BR01-2022-05-30-101010.mp4";
@@ -75,6 +85,10 @@ class DeliveryControllerTest {
   String videoNameOkToo = "BR01-2022-05-29-111111.mp4";
   Long videoSizeOkToo = 7777827L;
   String vdoNameNone = "None";
+  String vdoNameInvalidLength = "DRON--2022-05-30-101010.mp4";
+  String vdoNameInvalidDroneName = "????-2022-05-30-101010.mp4";
+  String vdoNameInvalidFormat = "DRON-2022-05-30-101010.avi";
+  String vdoNameInvalidDate = "DRON-2022-30-30-101010.mp4";
 
   Long drnIdOk = 1L;
   String drnNameOk = "BR01";
@@ -84,7 +98,7 @@ class DeliveryControllerTest {
 
   @Test
   @Order(1)
-  @DisplayName("1. A rota POST /delivery/new, ----> OK.")
+  @DisplayName("1.1. A rota POST /delivery/new, ----> OK.")
   public void postDeliveryOk() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -102,7 +116,7 @@ class DeliveryControllerTest {
     when(deliveryService.addDelivery(any(DeliveryDto.class))).thenReturn(delivery);
 
     this.mockMvc.perform(post("/delivery/new")
-        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(delivery))
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
     ).andExpect(status().isCreated())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
     .andExpect(jsonPath("$.id", is(delivery.getId().intValue())))
@@ -117,12 +131,112 @@ class DeliveryControllerTest {
 
   @Test
   @Order(2)
-  @DisplayName("2. A rota POST /delivery/{id}/uploadVideo, ----> OK.")
+  @DisplayName("1.2. A rota POST /delivery/new, ----> BAD REQUEST.")
+  public void postDeliveryWithInvalidReceiverName() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvInvalidReceiverName);
+
+    this.mockMvc.perform(post("/delivery/new")
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Delivery receiver name has more than 32 characters.")));
+  }
+
+  @Test
+  @Order(3)
+  @DisplayName("1.3. A rota POST /delivery/new, ----> BAD REQUEST.")
+  public void postDeliveryWithInvalidAddress() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvReceiverNameOk);
+    deliveryDto.setAddress(dlvInvalidAddress);
+
+    this.mockMvc.perform(post("/delivery/new")
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Delivery address has more than 100 characters.")));
+  }
+
+  @Test
+  @Order(4)
+  @DisplayName("1.4. A rota POST /delivery/new, ----> BAD REQUEST.")
+  public void postDeliveryWithInvalidZipCode() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvReceiverNameOk);
+    deliveryDto.setAddress(dlvAddressOk);
+    deliveryDto.setZipCode(dlvInvalidZipCode);
+
+    this.mockMvc.perform(post("/delivery/new")
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Zip code isn't in default format (12345-123).")));
+  }
+
+  @Test
+  @Order(5)
+  @DisplayName("1.5. A rota POST /delivery/new, ----> BAD REQUEST.")
+  public void postDeliveryWithInvalidLatitude() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvReceiverNameOk);
+    deliveryDto.setAddress(dlvAddressOk);
+    deliveryDto.setZipCode(dlvZipCodeOk);
+    deliveryDto.setLatitude(dlvInvalidLatitude);
+
+    this.mockMvc.perform(post("/delivery/new")
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Latitude isn't in the format.")));
+  }
+
+  @Test
+  @Order(6)
+  @DisplayName("1.6. A rota POST /delivery/new, ----> BAD REQUEST.")
+  public void postDeliveryWithInvalidLongitude() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvReceiverNameOk);
+    deliveryDto.setAddress(dlvAddressOk);
+    deliveryDto.setZipCode(dlvZipCodeOk);
+    deliveryDto.setLatitude(dlvLatitudeOk);
+    deliveryDto.setLongitude(dlvInvalidLongitude);
+
+    this.mockMvc.perform(post("/delivery/new")
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Longitude isn't in the format.")));
+  }
+
+  @Test
+  @Order(7)
+  @DisplayName("1.7. A rota POST /delivery/new, ----> BAD REQUEST.")
+  public void postDeliveryWithInvalidWeight() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvReceiverNameOk);
+    deliveryDto.setAddress(dlvAddressOk);
+    deliveryDto.setZipCode(dlvZipCodeOk);
+    deliveryDto.setLatitude(dlvLatitudeOk);
+    deliveryDto.setLongitude(dlvLongitudeOk);
+    deliveryDto.setWeightInKg(dlvInvalidWeight);
+
+    this.mockMvc.perform(post("/delivery/new")
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("The weight exceeded the limit (12Kg).")));
+  }
+
+  @Test
+  @Order(8)
+  @DisplayName("2.1. A rota POST /delivery/{id}/uploadVideo, ----> OK.")
   public void uploadVideoOk() throws Exception {
     when(deliveryService.getVideoByName(videoNameOk)).thenReturn(null);
 
     MockMultipartFile multipartFile = new MockMultipartFile("video", videoNameOk, "video.mp4",
         "New drone video".getBytes());
+
     doNothing().when(deliveryService).saveFile(videoNameOk, multipartFile);
 
     Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
@@ -150,7 +264,77 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(3)
+  @Order(9)
+  @DisplayName("2.2. A rota POST /delivery/{id}/uploadVideo, ----> Bad Request.")
+  public void uploadWithoutVideoField() throws Exception {
+    MockMultipartFile multipartFile = new MockMultipartFile("null", videoNameOk, "video.mp4",
+        "New drone video".getBytes());
+
+    this.mockMvc.perform(
+        multipart("/delivery/" + dlvIdOk + "/uploadVideo").file(multipartFile)
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Required request part 'video' is not present")));
+  }
+
+  @Test
+  @Order(10)
+  @DisplayName("2.3. A rota POST /delivery/{id}/uploadVideo, ----> Bad Request.")
+  public void uploadContainVideoNameWithInvalidLength() throws Exception {
+    MockMultipartFile multipartFile = new MockMultipartFile("video", vdoNameInvalidLength,
+        "video.mp4", "New drone video".getBytes());
+
+    this.mockMvc.perform(
+        multipart("/delivery/" + dlvIdOk + "/uploadVideo").file(multipartFile)
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", containsString("The video name length isn't 26 characters.")));
+  }
+
+  @Test
+  @Order(11)
+  @DisplayName("2.4. A rota POST /delivery/{id}/uploadVideo, ----> Bad Request.")
+  public void uploadContainVideoNameWithInvalidDroneName() throws Exception {
+    MockMultipartFile multipartFile = new MockMultipartFile("video", vdoNameInvalidDroneName,
+        "video.mp4", "New drone video".getBytes());
+
+    this.mockMvc.perform(
+        multipart("/delivery/" + dlvIdOk + "/uploadVideo").file(multipartFile)
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", containsString("The default drone name isn't correct.")));
+  }
+
+  @Test
+  @Order(12)
+  @DisplayName("2.5. A rota POST /delivery/{id}/uploadVideo, ----> Bad Request.")
+  public void uploadContainVideoNameWithInvalidFormat() throws Exception {
+    MockMultipartFile multipartFile = new MockMultipartFile("video", vdoNameInvalidFormat,
+        "video.mp4", "New drone video".getBytes());
+
+    this.mockMvc.perform(
+        multipart("/delivery/" + dlvIdOk + "/uploadVideo").file(multipartFile)
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", containsString("The video format isn't correct.")));
+  }
+
+  @Test
+  @Order(13)
+  @DisplayName("2.6. A rota POST /delivery/{id}/uploadVideo, ----> Bad Request.")
+  public void uploadContainVideoNameWithInvalidDate() throws Exception {
+    MockMultipartFile multipartFile = new MockMultipartFile("video", vdoNameInvalidDate,
+        "video.mp4", "New drone video".getBytes());
+
+    this.mockMvc.perform(
+        multipart("/delivery/" + dlvIdOk + "/uploadVideo").file(multipartFile)
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", containsString("The delivery date-time isn't correct.")));
+  }
+
+  @Test
+  @Order(14)
   @DisplayName("3. A rota GET /delivery/allVideos, ----> OK.")
   public void getAllVideos() throws Exception {
     Video videoA = new Video(videoNameOk, videoSizeOk);
@@ -177,8 +361,8 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(4)
-  @DisplayName("4. A rota GET /delivery/video/{id}, ----> OK.")
+  @Order(15)
+  @DisplayName("4.1. A rota GET /delivery/video/{id}, ----> OK.")
   public void getVideoDetailsOk() throws Exception {
     Video video = new Video(videoNameOk, videoSizeOk);
     video.setId(videoIdOk);
@@ -202,7 +386,20 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(5)
+  @Order(16)
+  @DisplayName("4.2. A rota GET /delivery/video/{id}, ----> NOT FOUND.")
+  public void getVideoDetailsWithIdNotFound() throws Exception {
+    when(deliveryService.getVideoById(videoIdOk)).thenThrow(
+        new InputNotFoundException("Video id not found."));
+
+    this.mockMvc.perform(get("/delivery/video/" + videoIdOk))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error", is("Video id not found.")));
+  }
+
+  @Test
+  @Order(17)
   @DisplayName("5. A rota GET /delivery/all, ----> OK.")
   public void getAllDeliveries() throws Exception {
     Delivery deliveryA = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
@@ -241,8 +438,8 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(6)
-  @DisplayName("6. A rota GET /delivery/{id}, ----> OK.")
+  @Order(18)
+  @DisplayName("6.1. A rota GET /delivery/{id}, ----> OK.")
   public void getDeliveryByIdOk() throws Exception {
     Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
@@ -275,8 +472,21 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(7)
-  @DisplayName("7. A rota DELETE /delivery/delete/{id}, ----> OK.")
+  @Order(19)
+  @DisplayName("6.2. A rota GET /delivery/{id}, ----> NOT FOUND.")
+  public void getDeliveryByIdWithIdNotFound() throws Exception {
+    when(deliveryService.getDeliveryById(dlvIdOk)).thenThrow(
+        new InputNotFoundException("Delivery id not found."));
+
+    this.mockMvc.perform(get("/delivery/" + dlvIdOk))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error", is("Delivery id not found.")));
+  }
+
+  @Test
+  @Order(20)
+  @DisplayName("7.1. A rota DELETE /delivery/delete/{id}, ----> OK.")
   public void removeDeliveryOk() throws Exception {
     when(deliveryService.removeDelivery(dlvIdOk)).thenReturn(dlvIdOk);
 
@@ -287,8 +497,21 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(8)
-  @DisplayName("8. A rota PUT /delivery/update/{id}, ----> OK.")
+  @Order(21)
+  @DisplayName("7.2. A rota DELETE /delivery/delete/{id}, ----> OK.")
+  public void removeDeliveryWithIdNotFound() throws Exception {
+    when(deliveryService.removeDelivery(dlvIdOk)).thenThrow(
+        new InputNotFoundException("Delivery id not found."));
+
+    this.mockMvc.perform(delete("/delivery/delete/" + dlvIdOk))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error", is("Delivery id not found.")));
+  }
+
+  @Test
+  @Order(22)
+  @DisplayName("8.1. A rota PUT /delivery/update/{id}, ----> OK.")
   public void updateDeliveryOk() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOkToo);
@@ -307,7 +530,7 @@ class DeliveryControllerTest {
         .thenReturn(delivery);
 
     this.mockMvc.perform(put("/delivery/update/" + dlvIdOk)
-        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(delivery))
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
     ).andExpect(status().isOk())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
     .andExpect(jsonPath("$.id", is(delivery.getId().intValue())))
@@ -321,8 +544,129 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(9)
-  @DisplayName("9. A rota GET /delivery/{id}/downloadVideo, ----> OK.")
+  @Order(23)
+  @DisplayName("8.2. A rota PUT /delivery/update/{id}, ----> BAD REQUEST.")
+  public void updateDeliveryWithInvalidReceiverName() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvInvalidReceiverName);
+
+    this.mockMvc.perform(put("/delivery/update/" + dlvIdOk)
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Delivery receiver name has more than 32 characters.")));
+  }
+
+  @Test
+  @Order(24)
+  @DisplayName("8.3. A rota PUT /delivery/update/{id}, ----> BAD REQUEST.")
+  public void updateDeliveryWithInvalidAddress() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvReceiverNameOk);
+    deliveryDto.setAddress(dlvInvalidAddress);
+
+    this.mockMvc.perform(put("/delivery/update/" + dlvIdOk)
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Delivery address has more than 100 characters.")));
+  }
+
+  @Test
+  @Order(25)
+  @DisplayName("8.4. A rota PUT /delivery/update/{id}, ----> BAD REQUEST.")
+  public void updateDeliveryWithInvalidZipCode() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvReceiverNameOk);
+    deliveryDto.setAddress(dlvAddressOk);
+    deliveryDto.setZipCode(dlvInvalidZipCode);
+
+    this.mockMvc.perform(put("/delivery/update/" + dlvIdOk)
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Zip code isn't in default format (12345-123).")));
+  }
+
+  @Test
+  @Order(26)
+  @DisplayName("8.5. A rota PUT /delivery/update/{id}, ----> BAD REQUEST.")
+  public void updateDeliveryWithInvalidLatitude() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvReceiverNameOk);
+    deliveryDto.setAddress(dlvAddressOk);
+    deliveryDto.setZipCode(dlvZipCodeOk);
+    deliveryDto.setLatitude(dlvInvalidLatitude);
+
+    this.mockMvc.perform(put("/delivery/update/" + dlvIdOk)
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Latitude isn't in the format.")));
+  }
+
+  @Test
+  @Order(27)
+  @DisplayName("8.6. A rota PUT /delivery/update/{id}, ----> BAD REQUEST.")
+  public void updateDeliveryWithInvalidLongitude() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvReceiverNameOk);
+    deliveryDto.setAddress(dlvAddressOk);
+    deliveryDto.setZipCode(dlvZipCodeOk);
+    deliveryDto.setLatitude(dlvLatitudeOk);
+    deliveryDto.setLongitude(dlvInvalidLongitude);
+
+    this.mockMvc.perform(put("/delivery/update/" + dlvIdOk)
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Longitude isn't in the format.")));
+  }
+
+  @Test
+  @Order(28)
+  @DisplayName("8.7. A rota PUT /delivery/update/{id}, ----> BAD REQUEST.")
+  public void updateDeliveryWithInvalidWeight() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvReceiverNameOk);
+    deliveryDto.setAddress(dlvAddressOk);
+    deliveryDto.setZipCode(dlvZipCodeOk);
+    deliveryDto.setLatitude(dlvLatitudeOk);
+    deliveryDto.setLongitude(dlvLongitudeOk);
+    deliveryDto.setWeightInKg(dlvInvalidWeight);
+
+    this.mockMvc.perform(put("/delivery/update/" + dlvIdOk)
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
+    ).andExpect(status().isBadRequest())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("The weight exceeded the limit (12Kg).")));
+  }
+
+  @Test
+  @Order(29)
+  @DisplayName("8.8. A rota PUT /delivery/update/{id}, ----> NOT FOUND.")
+  public void updateDeliveryWithIdNotFound() throws Exception {
+    DeliveryDto deliveryDto = new DeliveryDto();
+    deliveryDto.setReceiverName(dlvReceiverNameOk);
+    deliveryDto.setAddress(dlvAddressOk);
+    deliveryDto.setZipCode(dlvZipCodeOk);
+    deliveryDto.setLatitude(dlvLatitudeOk);
+    deliveryDto.setLongitude(dlvLongitudeOk);
+    deliveryDto.setWeightInKg(dlvWeightInKgOk);
+    
+    when(deliveryService.updateDelivery(any(Long.class), any(DeliveryDto.class))).thenThrow(
+        new InputNotFoundException("Delivery id not found."));
+
+    this.mockMvc.perform(put("/delivery/update/" + dlvIdOk)
+        .contentType(MediaType.APPLICATION_JSON).content(asJsonString(deliveryDto))
+    ).andExpect(status().isNotFound())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Delivery id not found.")));
+  }
+
+  @Test
+  @Order(30)
+  @DisplayName("9.1. A rota GET /delivery/{id}/downloadVideo, ----> OK.")
   public void downloadVideoOk() throws Exception {
     Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
@@ -342,10 +686,67 @@ class DeliveryControllerTest {
             "attachment; filename=\"" + videoResource.getFilename() + "\""))
         .andExpect(content().bytes(videoNameOk.getBytes()));
   }
+
+  @Test
+  @Order(31)
+  @DisplayName("9.2. A rota GET /delivery/{id}/downloadVideo, ----> NOT FOUND.")
+  public void downloadNotExistentVideo() throws Exception {
+    Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
+        dlvLongitudeOk, dlvWeightInKgOk);
+    delivery.setId(dlvIdOk);
+
+    when(deliveryService.getDeliveryById(dlvIdOk)).thenReturn(delivery);
+
+    this.mockMvc.perform(
+        get("/delivery/" + dlvIdOk + "/downloadVideo")
+    ).andExpect(status().isNotFound())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("The delivery hasn't video.")));
+  }
+
+  @Test
+  @Order(32)
+  @DisplayName("9.3. A rota GET /delivery/{id}/downloadVideo, ----> InternalServerError.")
+  public void downloadInternalServerErrorA() throws Exception {
+    Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
+        dlvLongitudeOk, dlvWeightInKgOk);
+    delivery.setId(dlvIdOk);
+    Video video = new Video(videoNameOk, videoSizeOk);
+    video.setId(videoIdOk);
+    delivery.setVideo(video);
+    when(deliveryService.getDeliveryById(dlvIdOk)).thenReturn(delivery);
+    when(deliveryService.getVideoAsResource(videoNameOk)).thenReturn(null);
+
+    this.mockMvc.perform(
+        get("/delivery/" + dlvIdOk + "/downloadVideo")
+    ).andExpect(status().isInternalServerError())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Internal server error in video finding.")));
+  }
+
+  @Test
+  @Order(33)
+  @DisplayName("9.4. A rota GET /delivery/{id}/downloadVideo, ----> InternalServerError.")
+  public void downloadInternalServerErrorB() throws Exception {
+    Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
+        dlvLongitudeOk, dlvWeightInKgOk);
+    delivery.setId(dlvIdOk);
+    Video video = new Video(videoNameOk, videoSizeOk);
+    video.setId(videoIdOk);
+    delivery.setVideo(video);
+    when(deliveryService.getDeliveryById(dlvIdOk)).thenReturn(delivery);
+    when(deliveryService.getVideoAsResource(videoNameOk)).thenThrow(new IOException());
+
+    this.mockMvc.perform(
+        get("/delivery/" + dlvIdOk + "/downloadVideo")
+    ).andExpect(status().isInternalServerError())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Internal server error in video finding.")));
+  }
   
   @Test
-  @Order(10)
-  @DisplayName("10. A rota DELETE /delivery/{id}/deleteVideo, ----> OK.")
+  @Order(34)
+  @DisplayName("10.1. A rota DELETE /delivery/{id}/deleteVideo, ----> OK.")
   public void deleteVideoVideoOk() throws Exception {
     Delivery deliveryA = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
@@ -372,6 +773,21 @@ class DeliveryControllerTest {
         .andExpect(jsonPath("$.status", is(deliveryA.getStatus().toString())))
         .andExpect(jsonPath("$.weightInKg", is(closeTo(deliveryA.getWeightInKg(), 0.0001))))
         .andExpect(jsonPath("$.videoName", is(vdoNameNone)));
+  }
+
+  @Test
+  @Order(35)
+  @DisplayName("10.2. A rota DELETE /delivery/{id}/deleteVideo, ----> NOT FOUND.")
+  public void deleteVideoVideoNotFound() throws Exception {
+    Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
+        dlvLongitudeOk, dlvWeightInKgOk);
+    delivery.setId(dlvIdOk);
+    when(deliveryService.getDeliveryById(dlvIdOk)).thenReturn(delivery);
+
+    this.mockMvc.perform(delete("/delivery/" + dlvIdOk + "/deleteVideo"))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error", is("The delivery hasn't video.")));
   }
 
   static String asJsonString(Object obj) {

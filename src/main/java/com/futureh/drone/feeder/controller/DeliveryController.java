@@ -43,7 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class DeliveryController {
 
   String videoAlreadyExists = "The video already exists.";
-  String deliveryHasntVideo = "The delivery hasn't video";
+  String deliveryHasntVideo = "The delivery hasn't video.";
 
   @Autowired
   private DeliveryService deliveryService;
