@@ -174,7 +174,6 @@ class DroneServiceTest {
 
   @Test
   @Order(7)
-  //@DisplayName("5.1. Método -------------------> removeDrone.")
   @DisplayName("5.1. O método removeDrone, com o id cadastrado na banco de dados, deve retornar"
       + " o id da instância da Classe Drone removida.")
   public void removeDroneOk() throws Exception {
