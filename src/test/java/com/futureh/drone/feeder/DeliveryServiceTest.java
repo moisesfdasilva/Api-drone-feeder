@@ -2,11 +2,15 @@ package com.futureh.drone.feeder;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import com.futureh.drone.feeder.dto.DeliveryDto;
+import com.futureh.drone.feeder.exception.InputNotFoundException;
+import com.futureh.drone.feeder.exception.IntServerErrorInVideoFinding;
+import com.futureh.drone.feeder.exception.WrongInputDataException;
 import com.futureh.drone.feeder.model.Delivery;
 import com.futureh.drone.feeder.model.Drone;
 import com.futureh.drone.feeder.model.Video;
@@ -15,6 +19,7 @@ import com.futureh.drone.feeder.repository.VideoRepository;
 import com.futureh.drone.feeder.service.DeliveryService;
 import com.futureh.drone.feeder.service.DroneService;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.CopyOption;
 import java.nio.file.Files;
@@ -54,32 +59,34 @@ class DeliveryServiceTest {
   @Mock
   private DroneService droneService;
 
-  Long dlvIdOk = 1L;
-  String dlvReceiverNameOk = "Alberto Santos Dumont";
-  String dlvAddressOk = "Avenida Ayrton Senna, 2541 - Barra da Tijuca, Rio de Janeiro - RJ";
-  String dlvZipCodeOk = "22775-002";
-  String dlvLatitudeOk = "-22.987029";
-  String dlvLongitudeOk = "-43.366164";
-  Float dlvWeightInKgOk = 4.3F;
-  Long dlvIdOkToo = 2L;
-  String dlvReceiverNameOkToo = "Joaquim Maria Machado de Assis";
-  String dlvAddressOkToo = "Praça Senador Salgado Filho, s/n - Centro, Rio de Janeiro - RJ";
-  String dlvZipCodeOkToo = "20021-340";
-  String dlvLatitudeOkToo = "-22.910948";
-  String dlvLongitudeOkToo = "-43.167084";
-  Float dlvWeightInKgOkToo = 6.9F;
+  private Long dlvIdOk = 1L;
+  private String dlvReceiverNameOk = "Alberto Santos Dumont";
+  private String dlvAddressOk = "Avenida Ayrton Senna, 2541 - Barra da Tijuca, Rio de Janeiro - RJ";
+  private String dlvZipCodeOk = "22775-002";
+  private String dlvLatitudeOk = "-22.987029";
+  private String dlvLongitudeOk = "-43.366164";
+  private Float dlvWeightInKgOk = 4.3F;
+  private Long dlvIdOkToo = 2L;
+  private String dlvReceiverNameOkToo = "Joaquim Maria Machado de Assis";
+  private String dlvAddressOkToo = "Praça Senador Salgado Filho, s/n - Centro, Rio de Janeiro - RJ";
+  private String dlvZipCodeOkToo = "20021-340";
+  private String dlvLatitudeOkToo = "-22.910948";
+  private String dlvLongitudeOkToo = "-43.167084";
+  private Float dlvWeightInKgOkToo = 6.9F;
 
-  Long videoIdOk = 1L;
-  String videoNameOk = "BR01-2022-05-30-101010.mp4";
-  Long videoSizeOk = 8888938L;
-  Long videoIdOkToo = 2L;
-  String videoNameOkToo = "BR01-2022-05-29-111111.mp4";
-  Long videoSizeOkToo = 7777827L;
+  private Long videoIdOk = 1L;
+  private String videoNameOk = "BR01-2022-05-30-101010.mp4";
+  private Long videoSizeOk = 8888938L;
+  private Long videoIdOkToo = 2L;
+  private String videoNameOkToo = "BR01-2022-05-29-111111.mp4";
+  private Long videoSizeOkToo = 7777827L;
+  private String videoNameEmpty = "";
+  private String videoNameNotExistent = "DRON-1999-10-10-101010.mp4";
 
-  Long drnIdOk = 1L;
-  String drnNameOk = "BR01";
-  String drnModelOk = "Embraer XYZ 777";
-  Float drnCpWeightOk = 10.5f;
+  private Long drnIdOk = 1L;
+  private String drnNameOk = "BR01";
+  private String drnModelOk = "Embraer XYZ 777";
+  private Float drnCpWeightOk = 10.5f;
 
   @Test
   @Order(1)
@@ -138,20 +145,35 @@ class DeliveryServiceTest {
 
   @Test
   @Order(3)
-  @DisplayName("3. saveFile --------------------> Ok.")
+  @DisplayName("3.1. saveFile --------------------> Ok.")
   public void saveFileOk() throws Exception {
     MockMultipartFile multipartFile = new MockMultipartFile("video", videoNameOk, "video.mp4",
         "New drone video".getBytes());
 
     try (MockedStatic<Files> utilities = Mockito.mockStatic(Files.class)) {
       utilities.when(() -> Files.copy(Mockito.any(InputStream.class), Mockito.any(Path.class),
-          Mockito.any(CopyOption.class))).thenReturn(1L);
+          Mockito.any(CopyOption.class))).thenReturn(videoIdOk);
       assertDoesNotThrow(() -> deliveryService.saveFile(videoNameOk, multipartFile));
     }
   }
 
   @Test
   @Order(4)
+  @DisplayName("3.2. saveFile --------------------> IOException.")
+  public void saveFileWithVideoNameEmpty() throws Exception {
+    MockMultipartFile multipartFile = new MockMultipartFile("video", videoNameEmpty, "video.mp4",
+        "New drone video".getBytes());
+
+    try (MockedStatic<Files> utilities = Mockito.mockStatic(Files.class)) {
+      utilities.when(() -> Files.copy(Mockito.any(InputStream.class), Mockito.any(Path.class),
+          Mockito.any(CopyOption.class))).thenThrow(IOException.class);
+      assertThrows(WrongInputDataException.class,
+          () -> deliveryService.saveFile(videoNameEmpty, multipartFile));
+    }
+  }
+
+  @Test
+  @Order(5)
   @DisplayName("4. addVideo --------------------> Ok.")
   public void addVideoOk() throws Exception {
     Drone drone = new Drone(drnNameOk, drnModelOk, drnCpWeightOk);
@@ -188,7 +210,7 @@ class DeliveryServiceTest {
   }
 
   @Test
-  @Order(5)
+  @Order(6)
   @DisplayName("5. getAllVideos --------------------> Ok.")
   public void getAllVideosOk() throws Exception {
     Video videoA = new Video(videoNameOk, videoSizeOk);
@@ -213,8 +235,8 @@ class DeliveryServiceTest {
   }
 
   @Test
-  @Order(6)
-  @DisplayName("6. getVideoById --------------------> Ok.")
+  @Order(7)
+  @DisplayName("6.1. getVideoById --------------------> Ok.")
   public void getVideoByIdOk() throws Exception {
     Video video = new Video(videoNameOk, videoSizeOk);
     video.setId(videoIdOk);
@@ -237,7 +259,17 @@ class DeliveryServiceTest {
   }
 
   @Test
-  @Order(7)
+  @Order(8)
+  @DisplayName("6.2. getVideoById --------------------> InputNotFoundException.")
+  public void getVideoByIdWithVideoIdNotFound() throws Exception {
+    when(videoRepository.findById(videoIdOk)).thenReturn(Optional.empty());
+
+    assertThrows(InputNotFoundException.class,
+        () -> deliveryService.getVideoById(dlvIdOk));
+  }
+
+  @Test
+  @Order(9)
   @DisplayName("7. getAllDeliveries --------------------> Ok.")
   public void getAllDeliveries() throws Exception {
     Delivery deliveryA = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
@@ -272,8 +304,8 @@ class DeliveryServiceTest {
   }
 
   @Test
-  @Order(8)
-  @DisplayName("8. getDeliveryById --------------------> Ok.")
+  @Order(10)
+  @DisplayName("8.1. getDeliveryById --------------------> Ok.")
   public void getDeliveryByIdOk() throws Exception {
     Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
@@ -293,8 +325,18 @@ class DeliveryServiceTest {
   }
 
   @Test
-  @Order(9)
-  @DisplayName("9. removeDelivery --------------------> Ok.")
+  @Order(11)
+  @DisplayName("8.2. getDeliveryById --------------------> InputNotFoundException.")
+  public void getDeliveryByIdWithIdNotFound() throws Exception {
+    when(deliveryRepository.findById(dlvIdOk)).thenReturn(Optional.empty());
+
+    assertThrows(InputNotFoundException.class,
+        () -> deliveryService.getDeliveryById(dlvIdOk));
+  }
+
+  @Test
+  @Order(12)
+  @DisplayName("9.1. removeDelivery --------------------> Ok.")
   public void removeDeliveryOk() throws Exception {
     Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
@@ -309,8 +351,18 @@ class DeliveryServiceTest {
   }
 
   @Test
-  @Order(10)
-  @DisplayName("10. updateDelivery --------------------> Ok.")
+  @Order(13)
+  @DisplayName("9.2. removeDelivery --------------------> InputNotFoundException.")
+  public void removeDeliveryWithIdNotFound() throws Exception {
+    when(deliveryRepository.findById(dlvIdOk)).thenReturn(Optional.empty());
+
+    assertThrows(InputNotFoundException.class,
+        () -> deliveryService.getDeliveryById(dlvIdOk));
+  }
+
+  @Test
+  @Order(14)
+  @DisplayName("10.1. updateDelivery --------------------> Ok.")
   public void updateDeliveryOk() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -341,8 +393,18 @@ class DeliveryServiceTest {
   }
 
   @Test
-  @Order(11)
-  @DisplayName("11. getVideoAsResource --------------------> Ok.")
+  @Order(15)
+  @DisplayName("10.2. updateDelivery --------------------> InputNotFoundException.")
+  public void updateDeliveryWithIdNotFound() throws Exception {
+    when(deliveryRepository.findById(dlvIdOk)).thenReturn(Optional.empty());
+
+    assertThrows(InputNotFoundException.class,
+        () -> deliveryService.getDeliveryById(dlvIdOk));
+  }
+
+  @Test
+  @Order(16)
+  @DisplayName("11.1. getVideoAsResource --------------------> Ok.")
   public void getVideoAsResourceOk() throws Exception {
     ArrayList<Path> filesMock = new ArrayList<Path>();
     Path videoMock = Paths.get("videos-uploads/" + videoNameOk);
@@ -358,8 +420,41 @@ class DeliveryServiceTest {
   }
 
   @Test
-  @Order(12)
-  @DisplayName("12. deleteVideo --------------------> Ok.")
+  @Order(17)
+  @DisplayName("11.2. getVideoAsResource --------------------> null.")
+  public void getVideoAsResourceWithNotFoundVideo() throws Exception {
+    ArrayList<Path> filesMock = new ArrayList<Path>();
+    Path videoMock = Paths.get("videos-uploads/" + videoNameOk);
+    filesMock.add(videoMock);
+
+    try (MockedStatic<Files> utilities = Mockito.mockStatic(Files.class)) {
+      utilities.when(() -> Files.list(Mockito.any(Path.class))).thenReturn(filesMock.stream());
+
+      Resource videoUri = deliveryService.getVideoAsResource(videoNameNotExistent);
+
+      assertEquals(videoUri, null);
+    }  
+  }
+
+  @Test
+  @Order(18)
+  @DisplayName("11.3. getVideoAsResource --------------------> null.")
+  public void getVideoAsResourceWithIoError() throws Exception {
+    ArrayList<Path> filesMock = new ArrayList<Path>();
+    Path videoMock = Paths.get("videos-uploads/" + videoNameOk);
+    filesMock.add(videoMock);
+
+    try (MockedStatic<Files> utilities = Mockito.mockStatic(Files.class)) {
+      utilities.when(() -> Files.list(Mockito.any(Path.class))).thenThrow(IOException.class);
+
+      assertThrows(IOException.class,
+          () -> deliveryService.getVideoAsResource(videoNameOk));
+    }  
+  }
+
+  @Test
+  @Order(19)
+  @DisplayName("12.1. deleteVideo --------------------> Ok.")
   public void deleteVideoOk() throws Exception {
     ArrayList<Path> filesMock = new ArrayList<Path>();
     Path videoMock = Paths.get("videos-uploads/" + videoNameOk);
@@ -383,6 +478,41 @@ class DeliveryServiceTest {
 
       Delivery deliveryWithoutVideo = deliveryService.deleteVideo(dlvIdOk, videoNameOk);
       assertEquals(deliveryWithoutVideo.getId(), 1L);
+    }
+  }
+
+  @Test
+  @Order(19)
+  @DisplayName("12.2. deleteVideo --------------------> InputNotFoundException.")
+  public void deleteVideoWithIdNotFound() throws Exception {
+    ArrayList<Path> filesMock = new ArrayList<Path>();
+    Path videoMock = Paths.get("videos-uploads/" + videoNameOk);
+    filesMock.add(videoMock);
+    File fileMock = new File(videoMock.toUri());
+    fileMock.createNewFile();
+
+    try (MockedStatic<Files> utilities = Mockito.mockStatic(Files.class)) {
+      utilities.when(() -> Files.list(Mockito.any(Path.class))).thenReturn(filesMock.stream());
+      when(deliveryRepository.findById(dlvIdOk)).thenReturn(Optional.empty());
+
+      assertThrows(InputNotFoundException.class,
+          () -> deliveryService.deleteVideo(dlvIdOk, videoNameOk));
+    }
+  }
+
+  @Test
+  @Order(21)
+  @DisplayName("12.3. deleteVideo --------------------> IntServerErrorInVideoFinding.")
+  public void deleteVideoWithNotFoundVideo() throws Exception {
+    ArrayList<Path> filesMock = new ArrayList<Path>();
+    Path videoMock = Paths.get("videos-uploads/" + videoNameOk);
+    filesMock.add(videoMock);
+
+    try (MockedStatic<Files> utilities = Mockito.mockStatic(Files.class)) {
+      utilities.when(() -> Files.list(Mockito.any(Path.class))).thenReturn(filesMock.stream());
+
+      assertThrows(IntServerErrorInVideoFinding.class,
+          () -> deliveryService.deleteVideo(dlvIdOk, videoNameOk));
     }
   }
 
