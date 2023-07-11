@@ -81,16 +81,19 @@ class DeliveryServiceTest {
   private String videoNameOkToo = "BR01-2022-05-29-111111.mp4";
   private Long videoSizeOkToo = 7777827L;
   private String videoNameEmpty = "";
-  private String videoNameNotExistent = "DRON-1999-10-10-101010.mp4";
 
   private Long drnIdOk = 1L;
   private String drnNameOk = "BR01";
   private String drnModelOk = "Embraer XYZ 777";
   private Float drnCpWeightOk = 10.5f;
 
+  private Long notExistentId = 999L;
+  private String notExistentVideoName = "DRON-1999-10-10-101010.mp4";
+
   @Test
   @Order(1)
-  @DisplayName("1. addDelivery --------------------> Ok.")
+  @DisplayName("1. Verifica se o método addDelivery retorna uma instância da Classe Delivery"
+      + " adicionada ao banco de dados.")
   public void addDeliveryOk() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -120,7 +123,7 @@ class DeliveryServiceTest {
 
   @Test
   @Order(2)
-  @DisplayName("2. getVideoByName --------------------> Ok.")
+  @DisplayName("2. Verifica se o método getVideoByName --------------------> Ok.")
   public void getVideoByNameOk() throws Exception {
     Video videoA = new Video(videoNameOk, videoSizeOk);
     videoA.setId(videoIdOk);
@@ -262,10 +265,10 @@ class DeliveryServiceTest {
   @Order(8)
   @DisplayName("6.2. getVideoById --------------------> InputNotFoundException.")
   public void getVideoByIdWithVideoIdNotFound() throws Exception {
-    when(videoRepository.findById(videoIdOk)).thenReturn(Optional.empty());
+    when(videoRepository.findById(notExistentId)).thenReturn(Optional.empty());
 
     assertThrows(InputNotFoundException.class,
-        () -> deliveryService.getVideoById(dlvIdOk));
+        () -> deliveryService.getVideoById(notExistentId));
   }
 
   @Test
@@ -328,10 +331,10 @@ class DeliveryServiceTest {
   @Order(11)
   @DisplayName("8.2. getDeliveryById --------------------> InputNotFoundException.")
   public void getDeliveryByIdWithIdNotFound() throws Exception {
-    when(deliveryRepository.findById(dlvIdOk)).thenReturn(Optional.empty());
+    when(deliveryRepository.findById(notExistentId)).thenReturn(Optional.empty());
 
     assertThrows(InputNotFoundException.class,
-        () -> deliveryService.getDeliveryById(dlvIdOk));
+        () -> deliveryService.getDeliveryById(notExistentId));
   }
 
   @Test
@@ -354,10 +357,10 @@ class DeliveryServiceTest {
   @Order(13)
   @DisplayName("9.2. removeDelivery --------------------> InputNotFoundException.")
   public void removeDeliveryWithIdNotFound() throws Exception {
-    when(deliveryRepository.findById(dlvIdOk)).thenReturn(Optional.empty());
+    when(deliveryRepository.findById(notExistentId)).thenReturn(Optional.empty());
 
     assertThrows(InputNotFoundException.class,
-        () -> deliveryService.getDeliveryById(dlvIdOk));
+        () -> deliveryService.getDeliveryById(notExistentId));
   }
 
   @Test
@@ -396,10 +399,10 @@ class DeliveryServiceTest {
   @Order(15)
   @DisplayName("10.2. updateDelivery --------------------> InputNotFoundException.")
   public void updateDeliveryWithIdNotFound() throws Exception {
-    when(deliveryRepository.findById(dlvIdOk)).thenReturn(Optional.empty());
+    when(deliveryRepository.findById(notExistentId)).thenReturn(Optional.empty());
 
     assertThrows(InputNotFoundException.class,
-        () -> deliveryService.getDeliveryById(dlvIdOk));
+        () -> deliveryService.getDeliveryById(notExistentId));
   }
 
   @Test
@@ -430,7 +433,7 @@ class DeliveryServiceTest {
     try (MockedStatic<Files> utilities = Mockito.mockStatic(Files.class)) {
       utilities.when(() -> Files.list(Mockito.any(Path.class))).thenReturn(filesMock.stream());
 
-      Resource videoUri = deliveryService.getVideoAsResource(videoNameNotExistent);
+      Resource videoUri = deliveryService.getVideoAsResource(notExistentVideoName);
 
       assertEquals(videoUri, null);
     }  

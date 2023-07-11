@@ -56,49 +56,51 @@ class DeliveryControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  Long dlvIdOk = 1L;
-  String dlvReceiverNameOk = "Alberto Santos Dumont";
-  String dlvAddressOk = "Avenida Ayrton Senna, 2541 - Barra da Tijuca, Rio de Janeiro - RJ";
-  String dlvZipCodeOk = "22775-002";
-  String dlvLatitudeOk = "-22.987029";
-  String dlvLongitudeOk = "-43.366164";
-  Float dlvWeightInKgOk = 4.3F;
-  Long dlvIdOkToo = 2L;
-  String dlvReceiverNameOkToo = "Joaquim Maria Machado de Assis";
-  String dlvAddressOkToo = "Praça Senador Salgado Filho, s/n - Centro, Rio de Janeiro - RJ";
-  String dlvZipCodeOkToo = "20021-340";
-  String dlvLatitudeOkToo = "-22.910948";
-  String dlvLongitudeOkToo = "-43.167084";
-  Float dlvWeightInKgOkToo = 6.9F;
-  String dlvInvalidReceiverName = "Invalid Receiver Name aaaaaaaaaaa";
-  String dlvInvalidAddress = "Invalid Address aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
-      + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
-  String dlvInvalidZipCode = "0";
-  String dlvInvalidLatitude = "01234";
-  String dlvInvalidLongitude = "01234";
-  Float dlvInvalidWeight = 12.01F;
+  private Long dlvIdOk = 1L;
+  private String dlvReceiverNameOk = "Alberto Santos Dumont";
+  private String dlvAddressOk = "Avenida Ayrton Senna, 2541 - Barra da Tijuca, Rio de Janeiro - RJ";
+  private String dlvZipCodeOk = "22775-002";
+  private String dlvLatitudeOk = "-22.987029";
+  private String dlvLongitudeOk = "-43.366164";
+  private Float dlvWeightInKgOk = 4.3F;
+  private Long dlvIdOkToo = 2L;
+  private String dlvReceiverNameOkToo = "Joaquim Maria Machado de Assis";
+  private String dlvAddressOkToo = "Praça Senador Salgado Filho, s/n - Centro, Rio de Janeiro - RJ";
+  private String dlvZipCodeOkToo = "20021-340";
+  private String dlvLatitudeOkToo = "-22.910948";
+  private String dlvLongitudeOkToo = "-43.167084";
+  private Float dlvWeightInKgOkToo = 6.9F;
+  private String dlvInvalidReceiverName = "Invalid Receiver Name aaaaaaaaaaa";
+  private String dlvInvalidAddress = "Invalid Address aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      + "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
+  private String dlvInvalidZipCode = "0";
+  private String dlvInvalidLatitude = "01234";
+  private String dlvInvalidLongitude = "01234";
+  private Float dlvInvalidWeight = 12.01F;
 
-  Long videoIdOk = 1L;
-  String videoNameOk = "BR01-2022-05-30-101010.mp4";
-  Long videoSizeOk = 8888938L;
-  Long videoIdOkToo = 2L;
-  String videoNameOkToo = "BR01-2022-05-29-111111.mp4";
-  Long videoSizeOkToo = 7777827L;
-  String vdoNameNone = "None";
-  String vdoNameInvalidLength = "DRON--2022-05-30-101010.mp4";
-  String vdoNameInvalidDroneName = "????-2022-05-30-101010.mp4";
-  String vdoNameInvalidFormat = "DRON-2022-05-30-101010.avi";
-  String vdoNameInvalidDate = "DRON-2022-30-30-101010.mp4";
+  private Long videoIdOk = 1L;
+  private String videoNameOk = "BR01-2022-05-30-101010.mp4";
+  private Long videoSizeOk = 8888938L;
+  private Long videoIdOkToo = 2L;
+  private String videoNameOkToo = "BR01-2022-05-29-111111.mp4";
+  private Long videoSizeOkToo = 7777827L;
+  private String vdoNameNone = "None";
+  private String vdoNameInvalidLength = "DRON--2022-05-30-101010.mp4";
+  private String vdoNameInvalidDroneName = "????-2022-05-30-101010.mp4";
+  private String vdoNameInvalidFormat = "DRON-2022-05-30-101010.avi";
+  private String vdoNameInvalidDate = "DRON-2022-30-30-101010.mp4";
 
-  Long drnIdOk = 1L;
-  String drnNameOk = "BR01";
-  String drnModelOk = "Embraer XYZ 777";
-  Float drnCpWeightOk = 10.5f;
-  String drnNameNone = "None";
+  private Long drnIdOk = 1L;
+  private String drnNameOk = "BR01";
+  private String drnModelOk = "Embraer XYZ 777";
+  private Float drnCpWeightOk = 10.5f;
+  private String drnNameNone = "None";
 
   @Test
   @Order(1)
-  @DisplayName("1.1. A rota POST /delivery/new, ----> OK.")
+  @DisplayName("1.1. A rota POST /delivery/new, com nome do remetente, endereço, cep, latitude,"
+      + " longitude e peso da entrega corretos, deve retornar status 200 e body contendo os dados"
+      + " da entrega.")
   public void postDeliveryOk() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -131,7 +133,8 @@ class DeliveryControllerTest {
 
   @Test
   @Order(2)
-  @DisplayName("1.2. A rota POST /delivery/new, ----> BAD REQUEST.")
+  @DisplayName("1.2. A rota POST /delivery/new, com o nome do remetente possuindo mais de 32"
+      + " caracteres, deve retornar status 400 e body contendo a mensagem de erro.")
   public void postDeliveryWithInvalidReceiverName() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvInvalidReceiverName);
@@ -145,7 +148,8 @@ class DeliveryControllerTest {
 
   @Test
   @Order(3)
-  @DisplayName("1.3. A rota POST /delivery/new, ----> BAD REQUEST.")
+  @DisplayName("1.3. A rota POST /delivery/new, com o endereço possuindo mais de 100"
+      + " caracteres, deve retornar status 400 e body contendo a mensagem de erro.")
   public void postDeliveryWithInvalidAddress() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -160,7 +164,8 @@ class DeliveryControllerTest {
 
   @Test
   @Order(4)
-  @DisplayName("1.4. A rota POST /delivery/new, ----> BAD REQUEST.")
+  @DisplayName("1.4. A rota POST /delivery/new, com o cep em um formato inválido,"
+      + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void postDeliveryWithInvalidZipCode() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -176,7 +181,8 @@ class DeliveryControllerTest {
 
   @Test
   @Order(5)
-  @DisplayName("1.5. A rota POST /delivery/new, ----> BAD REQUEST.")
+  @DisplayName("1.5. A rota POST /delivery/new, com a latitude em um formato inválido,"
+      + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void postDeliveryWithInvalidLatitude() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -193,7 +199,8 @@ class DeliveryControllerTest {
 
   @Test
   @Order(6)
-  @DisplayName("1.6. A rota POST /delivery/new, ----> BAD REQUEST.")
+  @DisplayName("1.6. A rota POST /delivery/new, com a longitude em um formato inválido,"
+      + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void postDeliveryWithInvalidLongitude() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -211,7 +218,8 @@ class DeliveryControllerTest {
 
   @Test
   @Order(7)
-  @DisplayName("1.7. A rota POST /delivery/new, ----> BAD REQUEST.")
+  @DisplayName("1.7. A rota POST /delivery/new, com o peso da entrega acima de 12kg,"
+      + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void postDeliveryWithInvalidWeight() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -230,7 +238,8 @@ class DeliveryControllerTest {
 
   @Test
   @Order(8)
-  @DisplayName("2.1. A rota POST /delivery/{id}/uploadVideo, ----> OK.")
+  @DisplayName("2.1. A rota POST /delivery/{id}/uploadVideo, com nome do video correto,"
+      + " deve retornar status 200 e body contendo os dados da entrega.")
   public void uploadVideoOk() throws Exception {
     when(deliveryService.getVideoByName(videoNameOk)).thenReturn(null);
 
@@ -265,7 +274,8 @@ class DeliveryControllerTest {
 
   @Test
   @Order(9)
-  @DisplayName("2.2. A rota POST /delivery/{id}/uploadVideo, ----> Bad Request.")
+  @DisplayName("2.2. A rota POST /delivery/{id}/uploadVideo, sem o campo video no body da"
+      + " requisição, deve retornar status 400 e body contendo a mensagem de erro.")
   public void uploadWithoutVideoField() throws Exception {
     MockMultipartFile multipartFile = new MockMultipartFile("null", videoNameOk, "video.mp4",
         "New drone video".getBytes());
@@ -279,7 +289,8 @@ class DeliveryControllerTest {
 
   @Test
   @Order(10)
-  @DisplayName("2.3. A rota POST /delivery/{id}/uploadVideo, ----> Bad Request.")
+  @DisplayName("2.3. A rota POST /delivery/{id}/uploadVideo, com o nome do video possuindo mais de"
+      + " 26 caracteres deve retornar status 400 e body contendo a mensagem de erro.")
   public void uploadContainVideoNameWithInvalidLength() throws Exception {
     MockMultipartFile multipartFile = new MockMultipartFile("video", vdoNameInvalidLength,
         "video.mp4", "New drone video".getBytes());
@@ -293,7 +304,8 @@ class DeliveryControllerTest {
 
   @Test
   @Order(11)
-  @DisplayName("2.4. A rota POST /delivery/{id}/uploadVideo, ----> Bad Request.")
+  @DisplayName("2.4. A rota POST /delivery/{id}/uploadVideo, com o nome do video possuindo o nome"
+      + " do drone incorreto, deve retornar status 400 e body contendo a mensagem de erro.")
   public void uploadContainVideoNameWithInvalidDroneName() throws Exception {
     MockMultipartFile multipartFile = new MockMultipartFile("video", vdoNameInvalidDroneName,
         "video.mp4", "New drone video".getBytes());
@@ -307,7 +319,8 @@ class DeliveryControllerTest {
 
   @Test
   @Order(12)
-  @DisplayName("2.5. A rota POST /delivery/{id}/uploadVideo, ----> Bad Request.")
+  @DisplayName("2.5. A rota POST /delivery/{id}/uploadVideo, com o video em um formato que não seja"
+      + " .mp4, deve retornar status 400 e body contendo a mensagem de erro.")
   public void uploadContainVideoNameWithInvalidFormat() throws Exception {
     MockMultipartFile multipartFile = new MockMultipartFile("video", vdoNameInvalidFormat,
         "video.mp4", "New drone video".getBytes());
@@ -321,7 +334,8 @@ class DeliveryControllerTest {
 
   @Test
   @Order(13)
-  @DisplayName("2.6. A rota POST /delivery/{id}/uploadVideo, ----> Bad Request.")
+  @DisplayName("2.6. A rota POST /delivery/{id}/uploadVideo, com o nome do video possuindo a data e"
+      + " hora incorretas, deve retornar status 400 e body contendo a mensagem de erro.")
   public void uploadContainVideoNameWithInvalidDate() throws Exception {
     MockMultipartFile multipartFile = new MockMultipartFile("video", vdoNameInvalidDate,
         "video.mp4", "New drone video".getBytes());
@@ -335,7 +349,30 @@ class DeliveryControllerTest {
 
   @Test
   @Order(14)
-  @DisplayName("3. A rota GET /delivery/allVideos, ----> OK.")
+  @DisplayName("2.7. A rota POST /delivery/{id}/uploadVideo, sem o id cadastrado na banco de dados,"
+      + " deve retornar status 404 e body contendo a mensagem de erro.")
+  public void uploadWithIdNotFound() throws Exception {
+    when(deliveryService.getVideoByName(videoNameOk)).thenReturn(null);
+
+    MockMultipartFile multipartFile = new MockMultipartFile("video", videoNameOk, "video.mp4",
+        "New drone video".getBytes());
+
+    doNothing().when(deliveryService).saveFile(videoNameOk, multipartFile);
+
+    when(deliveryService.addVideo(any(Long.class), any(Video.class))).thenThrow(
+        new InputNotFoundException("Delivery id not found."));
+
+    this.mockMvc.perform(
+        multipart("/delivery/" + dlvIdOk + "/uploadVideo").file(multipartFile)
+    ).andExpect(status().isNotFound())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Delivery id not found.")));
+  }
+
+  @Test
+  @Order(15)
+  @DisplayName("3. A rota GET /delivery/allVideos, deve retornar status 200 e body contendo a lista"
+      + " de videos cadastradas.")
   public void getAllVideos() throws Exception {
     Video videoA = new Video(videoNameOk, videoSizeOk);
     videoA.setId(videoIdOk);
@@ -361,8 +398,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(15)
-  @DisplayName("4.1. A rota GET /delivery/video/{id}, ----> OK.")
+  @Order(16)
+  @DisplayName("4.1. A rota GET /delivery/video/{id}, com o id cadastrado na banco de dados,"
+      + " deve retornar status 200 e body contendo os dados do Video.")
   public void getVideoDetailsOk() throws Exception {
     Video video = new Video(videoNameOk, videoSizeOk);
     video.setId(videoIdOk);
@@ -386,8 +424,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(16)
-  @DisplayName("4.2. A rota GET /delivery/video/{id}, ----> NOT FOUND.")
+  @Order(17)
+  @DisplayName("4.2. A rota GET /delivery/video/{id}, sem o id cadastrado na banco de dados,"
+      + " deve retornar status 404 e body contendo a mensagem de erro.")
   public void getVideoDetailsWithIdNotFound() throws Exception {
     when(deliveryService.getVideoById(videoIdOk)).thenThrow(
         new InputNotFoundException("Video id not found."));
@@ -399,8 +438,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(17)
-  @DisplayName("5. A rota GET /delivery/all, ----> OK.")
+  @Order(18)
+  @DisplayName("5. A rota GET /delivery/all, deve retornar status 200 e body contendo a lista"
+      + " de entrgas cadastradas.")
   public void getAllDeliveries() throws Exception {
     Delivery deliveryA = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
@@ -438,8 +478,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(18)
-  @DisplayName("6.1. A rota GET /delivery/{id}, ----> OK.")
+  @Order(19)
+  @DisplayName("6.1. A rota GET /delivery/{id}, com o id cadastrado na banco de dados,"
+      + " deve retornar status 200 e body contendo os dados da entrega.")
   public void getDeliveryByIdOk() throws Exception {
     Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
@@ -472,8 +513,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(19)
-  @DisplayName("6.2. A rota GET /delivery/{id}, ----> NOT FOUND.")
+  @Order(20)
+  @DisplayName("6.2. A rota GET /delivery/{id}, sem o id cadastrado na banco de dados,"
+      + " deve retornar status 404 e body contendo a mensagem de erro.")
   public void getDeliveryByIdWithIdNotFound() throws Exception {
     when(deliveryService.getDeliveryById(dlvIdOk)).thenThrow(
         new InputNotFoundException("Delivery id not found."));
@@ -485,8 +527,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(20)
-  @DisplayName("7.1. A rota DELETE /delivery/delete/{id}, ----> OK.")
+  @Order(21)
+  @DisplayName("7.1. A rota DELETE /delivery/delete/{id}, com o id cadastrado na banco de dados,"
+      + " deve retornar status 200 e body contendo a mensagem que o id foi removido.")
   public void removeDeliveryOk() throws Exception {
     when(deliveryService.removeDelivery(dlvIdOk)).thenReturn(dlvIdOk);
 
@@ -497,8 +540,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(21)
-  @DisplayName("7.2. A rota DELETE /delivery/delete/{id}, ----> OK.")
+  @Order(22)
+  @DisplayName("7.2. A rota DELETE /delivery/delete/{id}, sem o id cadastrado na banco de dados,"
+      + " deve retornar status 404 e body contendo a mensagem de erro.")
   public void removeDeliveryWithIdNotFound() throws Exception {
     when(deliveryService.removeDelivery(dlvIdOk)).thenThrow(
         new InputNotFoundException("Delivery id not found."));
@@ -510,8 +554,10 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(22)
-  @DisplayName("8.1. A rota PUT /delivery/update/{id}, ----> OK.")
+  @Order(23)
+  @DisplayName("8.1. A rota PUT /delivery/update/{id}, com nome do remetente, endereço, cep,"
+      + "latitude, longitude e peso da entrega corretos, deve retornar status 200 e body contendo"
+      + " os dados da entrega.")
   public void updateDeliveryOk() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOkToo);
@@ -544,8 +590,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(23)
-  @DisplayName("8.2. A rota PUT /delivery/update/{id}, ----> BAD REQUEST.")
+  @Order(24)
+  @DisplayName("8.2. A rota PUT /delivery/update/{id}, com o nome do remetente possuindo mais de 32"
+      + " caracteres, deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDeliveryWithInvalidReceiverName() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvInvalidReceiverName);
@@ -558,8 +605,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(24)
-  @DisplayName("8.3. A rota PUT /delivery/update/{id}, ----> BAD REQUEST.")
+  @Order(25)
+  @DisplayName("8.3. A rota PUT /delivery/update/{id}, com o endereço possuindo mais de 100"
+      + " caracteres, deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDeliveryWithInvalidAddress() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -573,8 +621,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(25)
-  @DisplayName("8.4. A rota PUT /delivery/update/{id}, ----> BAD REQUEST.")
+  @Order(26)
+  @DisplayName("8.4. A rota PUT /delivery/update/{id}, com o cep em um formato inválido,"
+      + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDeliveryWithInvalidZipCode() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -589,8 +638,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(26)
-  @DisplayName("8.5. A rota PUT /delivery/update/{id}, ----> BAD REQUEST.")
+  @Order(27)
+  @DisplayName("8.5. A rota PUT /delivery/update/{id}, com a latitude em um formato inválido,"
+      + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDeliveryWithInvalidLatitude() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -606,8 +656,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(27)
-  @DisplayName("8.6. A rota PUT /delivery/update/{id}, ----> BAD REQUEST.")
+  @Order(28)
+  @DisplayName("8.6. A rota PUT /delivery/update/{id}, com a longitude em um formato inválido,"
+      + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDeliveryWithInvalidLongitude() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -624,8 +675,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(28)
-  @DisplayName("8.7. A rota PUT /delivery/update/{id}, ----> BAD REQUEST.")
+  @Order(29)
+  @DisplayName("8.7. A rota PUT /delivery/update/{id}, com o peso da entrega acima de 12kg,"
+      + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDeliveryWithInvalidWeight() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -643,8 +695,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(29)
-  @DisplayName("8.8. A rota PUT /delivery/update/{id}, ----> NOT FOUND.")
+  @Order(30)
+  @DisplayName("8.8. A rota PUT /delivery/update/{id}, sem o id cadastrado na banco de dados,"
+      + " deve retornar status 404 e body contendo a mensagem de erro.")
   public void updateDeliveryWithIdNotFound() throws Exception {
     DeliveryDto deliveryDto = new DeliveryDto();
     deliveryDto.setReceiverName(dlvReceiverNameOk);
@@ -665,8 +718,9 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(30)
-  @DisplayName("9.1. A rota GET /delivery/{id}/downloadVideo, ----> OK.")
+  @Order(31)
+  @DisplayName("9.1. A rota GET /delivery/{id}/downloadVideo, com o id cadastrado na banco de dados"
+      + " possuindo o video, deve retornar status 200 e body contendo os dados da entrega.")
   public void downloadVideoOk() throws Exception {
     Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
@@ -688,9 +742,25 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(31)
-  @DisplayName("9.2. A rota GET /delivery/{id}/downloadVideo, ----> NOT FOUND.")
-  public void downloadNotExistentVideo() throws Exception {
+  @Order(32)
+  @DisplayName("9.2. A rota GET /delivery/{id}/downloadVideo, sem o id cadastrado na banco de"
+      + " dados, deve retornar status 404 e body contendo a mensagem de erro.")
+  public void downloadWithIdNotFound() throws Exception {
+    when(deliveryService.getDeliveryById(dlvIdOk)).thenThrow(
+        new InputNotFoundException("Delivery id not found."));
+
+    this.mockMvc.perform(
+        get("/delivery/" + dlvIdOk + "/downloadVideo")
+    ).andExpect(status().isNotFound())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("Delivery id not found.")));
+  }
+
+  @Test
+  @Order(33)
+  @DisplayName("9.3. A rota GET /delivery/{id}/downloadVideo, com o id cadastrado na banco de dados"
+      + " não possuindo o video, deve retornar status 404 e body contendo a mensagem de erro.")
+  public void downloadWithNotExistentVideo() throws Exception {
     Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
     delivery.setId(dlvIdOk);
@@ -705,8 +775,10 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(32)
-  @DisplayName("9.3. A rota GET /delivery/{id}/downloadVideo, ----> InternalServerError.")
+  @Order(34)
+  @DisplayName("9.4. A rota GET /delivery/{id}/downloadVideo, com o id cadastrado na banco de dados"
+      + " possuindo o video, mas sem o vídeo no diretório videos-upload, deve retornar status 500 e"
+      + " body contendo a mensagem de erro.")
   public void downloadInternalServerErrorA() throws Exception {
     Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
@@ -725,8 +797,10 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(33)
-  @DisplayName("9.4. A rota GET /delivery/{id}/downloadVideo, ----> InternalServerError.")
+  @Order(35)
+  @DisplayName("9.5. A rota GET /delivery/{id}/downloadVideo, com o id cadastrado na banco de dados"
+      + " possuindo o video, mas ocorrendo uma falha ao buscar o vídeo no diretório videos-upload,"
+      + " deve retornar status 500 e body contendo a mensagem de erro.")
   public void downloadInternalServerErrorB() throws Exception {
     Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
@@ -745,8 +819,10 @@ class DeliveryControllerTest {
   }
   
   @Test
-  @Order(34)
-  @DisplayName("10.1. A rota DELETE /delivery/{id}/deleteVideo, ----> OK.")
+  @Order(36)
+  @DisplayName("10.1. A rota DELETE /delivery/{id}/deleteVideo, com o id cadastrado na banco de"
+      + " dados possuindo o video, deve retornar status 200 e body contendo os dados da entrega"
+      + " atualizados.")
   public void deleteVideoVideoOk() throws Exception {
     Delivery deliveryA = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
@@ -776,8 +852,10 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(35)
-  @DisplayName("10.2. A rota DELETE /delivery/{id}/deleteVideo, ----> NOT FOUND.")
+  @Order(37)
+  @DisplayName("10.2. A rota DELETE /delivery/{id}/deleteVideo, com o id cadastrado na banco de"
+      + " dados não possuindo o video, deve retornar status 404 e body contendo a mensagem de"
+      + " erro.")
   public void deleteVideoVideoNotFound() throws Exception {
     Delivery delivery = new Delivery(dlvReceiverNameOk, dlvAddressOk, dlvZipCodeOk, dlvLatitudeOk,
         dlvLongitudeOk, dlvWeightInKgOk);
@@ -788,6 +866,20 @@ class DeliveryControllerTest {
         .andExpect(status().isNotFound())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.error", is("The delivery hasn't video.")));
+  }
+
+  @Test
+  @Order(38)
+  @DisplayName("10.3. A rota DELETE /delivery/{id}/deleteVideo, sem o id cadastrado na banco de"
+      + " dados, deve retornar status 404 e body contendo a mensagem de erro.")
+  public void deleteVideoWithIdNotFound() throws Exception {
+    when(deliveryService.getDeliveryById(dlvIdOk)).thenThrow(
+        new InputNotFoundException("Delivery id not found."));
+
+    this.mockMvc.perform(delete("/delivery/" + dlvIdOk + "/deleteVideo"))
+        .andExpect(status().isNotFound())
+        .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+        .andExpect(jsonPath("$.error", is("Delivery id not found.")));
   }
 
   static String asJsonString(Object obj) {

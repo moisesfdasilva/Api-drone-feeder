@@ -36,18 +36,31 @@ class DroneServiceTest {
   @Mock
   private DroneRepository droneRepository;
 
+  private Long drnIdOk = 1L;
+  private String drnNameOk = "BR01";
+  private String drnModelOk = "Embraer XYZ 777";
+  private Float drnCpWeightInKgOk = 10.5f;
+  private Long drnIdOkToo = 1L;
+  private String drnNameOkToo = "BR02";
+  private String drnModelOkToo = "Embraer XYZ 787";
+  private Float drnCpWeightInKgOkToo = 11.6f;
+
+  private String notExistentName = "ABCD";
+  private Long notExistentId = 999L;
+
   @Test
   @Order(1)
-  @DisplayName("1. O método addDrone deve retornar uma instância da Classe Drone.")
+  @DisplayName("1. Verifica se o método addDrone retorna uma instância da Classe Drone"
+      + " adicionada ao banco de dados.")
   public void addDroneOk() throws Exception {
     DroneDto droneToSave = new DroneDto();
-    droneToSave.setName("BR01");
-    droneToSave.setModel("Embraer XYZ 777");
-    droneToSave.setCapacityWeightInKg(10.5f);
+    droneToSave.setName(drnNameOk);
+    droneToSave.setModel(drnModelOk);
+    droneToSave.setCapacityWeightInKg(drnCpWeightInKgOk);
 
     Drone droneToReturn = new Drone(droneToSave.getName(), droneToSave.getModel(),
         droneToSave.getCapacityWeightInKg());
-    droneToReturn.setId(1L);
+    droneToReturn.setId(drnIdOk);
 
     when(droneRepository.save(any(Drone.class))).thenReturn(droneToReturn);
 
@@ -62,13 +75,13 @@ class DroneServiceTest {
 
   @Test
   @Order(2)
-  @DisplayName("2.1. O método getDroneByName, com o id cadastrado na banco de dados, deve retornar"
-      + " uma instância da Classe Drone.")
+  @DisplayName("2.1. Verifica se o método getDroneByName, com o nome cadastrado na banco de dados,"
+      + " retorna a instância da Classe Drone encontrada no banco de dados.")
   public void getDroneByNameOk() throws Exception {
-    Drone droneA = new Drone("BR01", "Embraer XYZ 777", 10.5f);
-    droneA.setId(1L);
-    Drone droneB = new Drone("BR02", "Embraer XYZ 787", 11.6f);
-    droneB.setId(2L);
+    Drone droneA = new Drone(drnNameOk, drnModelOk, drnCpWeightInKgOk);
+    droneA.setId(drnIdOk);
+    Drone droneB = new Drone(drnNameOkToo, drnModelOkToo, drnCpWeightInKgOkToo);
+    droneB.setId(drnIdOkToo);
     List<Drone> dronesToReturn = new ArrayList<Drone>();
     dronesToReturn.add(droneA);
     dronesToReturn.add(droneB);
@@ -86,13 +99,13 @@ class DroneServiceTest {
 
   @Test
   @Order(3)
-  @DisplayName("2.2. O método getDroneByName, sem o id cadastrado na banco de dados, deve retornar"
-      + " uma exceção do tipo InputNotFoundException.")
+  @DisplayName("2.2. Verifica se o método getDroneByName, sem o nome cadastrado na banco de dados,"
+      + " retorna uma exceção do tipo InputNotFoundException.")
   public void getDroneByNameNotFound() throws Exception {
-    Drone droneA = new Drone("BR01", "Embraer XYZ 777", 10.5f);
-    droneA.setId(1L);
-    Drone droneB = new Drone("BR02", "Embraer XYZ 787", 11.6f);
-    droneB.setId(2L);
+    Drone droneA = new Drone(drnNameOk, drnModelOk, drnCpWeightInKgOk);
+    droneA.setId(drnIdOk);
+    Drone droneB = new Drone(drnNameOkToo, drnModelOkToo, drnCpWeightInKgOkToo);
+    droneB.setId(drnIdOkToo);
 
     List<Drone> dronesToReturn = new ArrayList<Drone>();
     dronesToReturn.add(droneA);
@@ -100,19 +113,19 @@ class DroneServiceTest {
 
     when(droneRepository.findAll()).thenReturn(dronesToReturn);
 
-    String notExistentName = "ABCD";
     assertThrows(InputNotFoundException.class,
         () -> droneService.getDroneByName(notExistentName));
   }
 
   @Test
   @Order(4)
-  @DisplayName("3. O método getAllDrones deve retornar uma Lista com instâncias da Classe Drone.")
+  @DisplayName("3. Verifica se o método getAllDrones retorna uma Lista com as instâncias da Classe"
+      + " Drone cadastradas no banco de dados.")
   public void getAllDronesOk() throws Exception {
-    Drone droneA = new Drone("BR01", "Embraer XYZ 777", 10.5f);
-    droneA.setId(1L);
-    Drone droneB = new Drone("BR02", "Embraer XYZ 787", 11.6f);
-    droneB.setId(2L);
+    Drone droneA = new Drone(drnNameOk, drnModelOk, drnCpWeightInKgOk);
+    droneA.setId(drnIdOk);
+    Drone droneB = new Drone(drnNameOkToo, drnModelOkToo, drnCpWeightInKgOkToo);
+    droneB.setId(drnIdOkToo);
 
     List<Drone> dronesToReturn = new ArrayList<Drone>();
     dronesToReturn.add(droneA);
@@ -137,16 +150,15 @@ class DroneServiceTest {
 
   @Test
   @Order(5)
-  @DisplayName("4.1. O método getDroneById, com o id cadastrado na banco de dados, deve retornar"
-      + " uma instância da Classe Drone.")
+  @DisplayName("4.1. Verifica se o método getDroneById, com o id cadastrado na banco de dados,"
+      + " retorna a instância da Classe Drone encontrada no banco de dados.")
   public void getDroneByIdOk() throws Exception {
-    Long idToFind = 1L;
-    Drone droneToReturn = new Drone("BR01", "Embraer XYZ 777", 10.5f);
-    droneToReturn.setId(idToFind);
+    Drone droneToReturn = new Drone(drnNameOk, drnModelOk, drnCpWeightInKgOk);
+    droneToReturn.setId(drnIdOk);
 
-    when(droneRepository.findById(idToFind)).thenReturn(Optional.of(droneToReturn));
+    when(droneRepository.findById(drnIdOk)).thenReturn(Optional.of(droneToReturn));
 
-    Drone droneFound = droneService.getDroneById(idToFind);
+    Drone droneFound = droneService.getDroneById(drnIdOk);
 
     assertEquals(droneFound.getId(), droneToReturn.getId());
     assertEquals(droneFound.getName(), droneToReturn.getName());
@@ -157,14 +169,11 @@ class DroneServiceTest {
 
   @Test
   @Order(6)
-  @DisplayName("4.2. O método getDroneById, sem o id cadastrado na banco de dados, deve retornar"
-      + " uma exceção do tipo InputNotFoundException.")
+  @DisplayName("4.2. Verifica se o método getDroneById, sem o id cadastrado na banco de dados,"
+      + " retorna uma exceção do tipo InputNotFoundException.")
   public void getDroneByIdNotFound() throws Exception {
-    Long idToFind = 1L;
-    Drone droneToReturn = new Drone("BR01", "Embraer XYZ 777", 10.5f);
-    droneToReturn.setId(idToFind);
-    
-    Long notExistentId = 777L;
+    Drone droneToReturn = new Drone(drnNameOk, drnModelOk, drnCpWeightInKgOk);
+    droneToReturn.setId(drnIdOk);
 
     when(droneRepository.findById(notExistentId)).thenReturn(Optional.empty());
 
@@ -174,28 +183,25 @@ class DroneServiceTest {
 
   @Test
   @Order(7)
-  @DisplayName("5.1. O método removeDrone, com o id cadastrado na banco de dados, deve retornar"
-      + " o id da instância da Classe Drone removida.")
+  @DisplayName("5.1. Verifica se o método removeDrone, com o id cadastrado na banco de dados,"
+      + " retorna o id da instância da Classe Drone removida.")
   public void removeDroneOk() throws Exception {
-    Long idToFind = 1L;
-    Drone droneToReturn = new Drone("BR01", "Embraer XYZ 777", 10.5f);
-    droneToReturn.setId(idToFind);
+    Drone droneToReturn = new Drone(drnNameOk, drnModelOk, drnCpWeightInKgOk);
+    droneToReturn.setId(drnIdOk);
 
-    when(droneRepository.findById(idToFind)).thenReturn(Optional.of(droneToReturn));
+    when(droneRepository.findById(drnIdOk)).thenReturn(Optional.of(droneToReturn));
     doNothing().when(droneRepository).delete(droneToReturn);
 
-    Long droneIdDeleted = droneService.removeDrone(idToFind);
+    Long droneIdDeleted = droneService.removeDrone(drnIdOk);
 
     assertEquals(droneIdDeleted, droneToReturn.getId());
   }
 
   @Test
   @Order(8)
-  @DisplayName("5.2. O método removeDrone, sem o id cadastrado na banco de dados, deve retornar"
-      + " uma exceção do tipo InputNotFoundException.")
+  @DisplayName("5.2. Verifica se o método removeDrone, sem o id cadastrado na banco de dados,"
+      + " retorna uma exceção do tipo InputNotFoundException.")
   public void removeDroneWithIdNotFound() throws Exception {
-    Long notExistentId = 777L;
-
     when(droneRepository.findById(notExistentId)).thenReturn(Optional.empty());
 
     assertThrows(InputNotFoundException.class,
@@ -204,39 +210,34 @@ class DroneServiceTest {
 
   @Test
   @Order(9)
-  @DisplayName("6.1. O método updateDrone, com o id cadastrado na banco de dados, deve retornar"
-      + " a instância da Classe Drone atualizada.")
+  @DisplayName("6.1. Verifica se o método updateDrone, com o id cadastrado na banco de dados,"
+      + " retorna a instância da Classe Drone atualizada.")
   public void updateDroneOk() throws Exception {
-    Long idToFind = 1L;
-    Drone droneA = new Drone("BR01", "Embraer XYZ 777", 10.5f);
-    when(droneRepository.findById(idToFind)).thenReturn(Optional.of(droneA));
+    Drone droneA = new Drone(drnNameOk, drnModelOk, drnCpWeightInKgOk);
+    when(droneRepository.findById(drnIdOk)).thenReturn(Optional.of(droneA));
 
-    Drone droneB = new Drone("BR02", "Embraer XYZ 787", 11.6f);
-    droneB.setId(idToFind);
+    Drone droneB = new Drone(drnNameOkToo, drnModelOkToo, drnCpWeightInKgOkToo);
+    droneB.setId(drnIdOk);
     doReturn(droneB).when(droneRepository).save(droneA);
 
     DroneDto droneDto = new DroneDto();
-    droneDto.setName("BR02");
-    droneDto.setModel("Embraer XYZ 787");
-    droneDto.setCapacityWeightInKg(11.6f);
-    Drone droneUpdated = droneService.updateDrone(idToFind, droneDto);
+
+    Drone droneUpdated = droneService.updateDrone(drnIdOk, droneDto);
 
     assertEquals(droneUpdated.getId(), droneB.getId());
+    assertEquals(droneUpdated.getName(), droneB.getName());
+    assertEquals(droneUpdated.getModel(), droneB.getModel());
+    assertEquals(droneUpdated.getCapacityWeightInKg(), droneB.getCapacityWeightInKg());
   }
 
   @Test
   @Order(10)
-  @DisplayName("6.2. O método updateDrone, sem o id cadastrado na banco de dados, deve retornar"
-      + " uma exceção do tipo InputNotFoundException.")
+  @DisplayName("6.2. Verifica se o método updateDrone, sem o id cadastrado na banco de dados,"
+      + " retorna uma exceção do tipo InputNotFoundException.")
   public void updateDroneWithIdNotFound() throws Exception {
-    Long notExistentId = 777L;
-
     when(droneRepository.findById(notExistentId)).thenReturn(Optional.empty());
 
     DroneDto droneDto = new DroneDto();
-    droneDto.setName("BR02");
-    droneDto.setModel("Embraer XYZ 787");
-    droneDto.setCapacityWeightInKg(11.6f);
 
     assertThrows(InputNotFoundException.class,
         () -> droneService.updateDrone(notExistentId, droneDto));
