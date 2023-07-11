@@ -36,7 +36,7 @@ public class DroneService {
         .filter(drn -> drn.getName().equals(droneName))
         .findAny().orElse(null);
     if (drone != null) {
-      return drone;      
+      return drone;
     } else {
       throw new InputNotFoundException(droneNameNotFound);
     }
@@ -51,7 +51,7 @@ public class DroneService {
   public Drone getDroneById(Long id) {
     Drone drone = droneRepository.findById(id).orElse(null);
     if (drone != null) {
-      return drone;      
+      return drone;
     } else {
       throw new InputNotFoundException(droneIdNotFound);
     }

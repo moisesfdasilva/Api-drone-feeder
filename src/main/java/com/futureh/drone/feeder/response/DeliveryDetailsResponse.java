@@ -1,23 +1,13 @@
-package com.futureh.drone.feeder.model;
+package com.futureh.drone.feeder.response;
 
+import com.futureh.drone.feeder.model.Delivery;
 import com.futureh.drone.feeder.util.DeliveryStatus;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 /**
- * Delivery class.
+ * DeliveryDetailsResponse class.
  */
-@Entity
-@Table(name = "delivery")
-public class Delivery {
+public class DeliveryDetailsResponse {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String receiverName;
   private String address;
@@ -26,24 +16,7 @@ public class Delivery {
   private String longitude;
   private DeliveryStatus status;
   private Float weightInKg;
-
-  @OneToOne(cascade = CascadeType.ALL)
-  private Video video;
-
-  /** Delivery default constructor method. */
-  public Delivery() { }
-
-  /** Delivery constructor method. */
-  public Delivery(String receiverName, String address, String zipCode, String latitude,
-      String longitude, Float weightInKg) {
-    this.receiverName = receiverName;
-    this.address = address;
-    this.zipCode = zipCode;
-    this.latitude = latitude;
-    this.longitude = longitude;
-    this.status = DeliveryStatus.TO_DELIVER;
-    this.weightInKg = weightInKg;
-  }
+  private VideoResponse video;
 
   public Long getId() {
     return id;
@@ -109,12 +82,32 @@ public class Delivery {
     this.weightInKg = weightInKg;
   }
 
-  public Video getVideo() {
+  public VideoResponse getVideo() {
     return video;
   }
 
-  public void setVideo(Video video) {
+  public void setVideo(VideoResponse video) {
     this.video = video;
+  }
+
+  /**createResponseByDeliveryEntity method.*/
+  public void createResponseByDeliveryEntity(Delivery delivery) {
+    setId(delivery.getId());
+    setReceiverName(delivery.getReceiverName());
+    setAddress(delivery.getAddress());
+    setZipCode(delivery.getZipCode());
+    setLatitude(delivery.getLatitude());
+    setLongitude(delivery.getLongitude());
+    setStatus(delivery.getStatus());
+    setWeightInKg(delivery.getWeightInKg());
+
+    if (delivery.getVideo() != null) {
+      VideoResponse videoResponse = new VideoResponse();
+      videoResponse.createResponseByVideoEntity(delivery.getVideo());
+      setVideo(videoResponse);
+    } else {
+      setVideo(null);
+    }
   }
 
 }

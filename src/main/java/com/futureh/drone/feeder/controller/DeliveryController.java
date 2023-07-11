@@ -8,16 +8,19 @@ import com.futureh.drone.feeder.middleware.DeliveryMiddleware;
 import com.futureh.drone.feeder.middleware.VideoNameMiddleware;
 import com.futureh.drone.feeder.model.Delivery;
 import com.futureh.drone.feeder.model.Video;
+import com.futureh.drone.feeder.response.DeliveryDetailsResponse;
 import com.futureh.drone.feeder.response.DeliveryResponse;
 import com.futureh.drone.feeder.response.VideoDetailsResponse;
 import com.futureh.drone.feeder.response.VideoResponse;
 import com.futureh.drone.feeder.service.DeliveryService;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.StringUtils;
@@ -40,7 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class DeliveryController {
 
   String videoAlreadyExists = "The video already exists.";
-  String deliveryHasntVideo = "The delivery hasn't video";
+  String deliveryHasntVideo = "The delivery hasn't video.";
 
   @Autowired
   private DeliveryService deliveryService;
@@ -55,7 +58,7 @@ public class DeliveryController {
     DeliveryResponse newDeliveryResponse = new DeliveryResponse();
     newDeliveryResponse.createResponseByDeliveryEntity(newDelivery);
 
-    return ResponseEntity.ok(newDeliveryResponse);
+    return ResponseEntity.status(HttpStatus.CREATED).body(newDeliveryResponse);
   }
 
   /** addVideo method.*/
@@ -79,7 +82,7 @@ public class DeliveryController {
     DeliveryResponse deliveryUpdatedResponse = new DeliveryResponse();
     deliveryUpdatedResponse.createResponseByDeliveryEntity(deliveryUpdated);
 
-    return ResponseEntity.ok(deliveryUpdatedResponse);
+    return ResponseEntity.status(HttpStatus.CREATED).body(deliveryUpdatedResponse);
   }
 
   /** getAllVideos method.*/
@@ -97,7 +100,7 @@ public class DeliveryController {
   }
 
   /** getVideoDetails method.*/
-  @GetMapping("/{id}/video")
+  @GetMapping("/video/{id}")
   public ResponseEntity<VideoDetailsResponse> getVideoDetails(@PathVariable("id") Long id) {
     Video video = deliveryService.getVideoById(id);
 
@@ -123,17 +126,24 @@ public class DeliveryController {
 
   /** getDeliveryById method.*/
   @GetMapping("/{id}")
-  public ResponseEntity<Delivery> getDeliveryById(@PathVariable("id") Long id) {
+  public ResponseEntity<DeliveryDetailsResponse> getDeliveryById(@PathVariable("id") Long id) {
     Delivery delivery = deliveryService.getDeliveryById(id);
 
-    return ResponseEntity.ok(delivery);
+    DeliveryDetailsResponse deliveryDetailsResponse = new DeliveryDetailsResponse();
+    deliveryDetailsResponse.createResponseByDeliveryEntity(delivery);
+
+    return ResponseEntity.ok(deliveryDetailsResponse);
   }
 
   /** removeDelivery method.*/
   @DeleteMapping("/delete/{id}")
-  public ResponseEntity<String> removeDelivery(@PathVariable("id") Long id) {
+  public ResponseEntity<HashMap<String, String>> removeDelivery(@PathVariable("id") Long id) {
     Long idRemoved = deliveryService.removeDelivery(id);
-    String response = "Id " + idRemoved + " has been removed.";
+
+    HashMap<String, String> response = new HashMap<String, String>();
+    String message = "Delivery id " + idRemoved + " has been removed.";
+    response.put("message", message);
+
     return ResponseEntity.ok(response);
   }
 

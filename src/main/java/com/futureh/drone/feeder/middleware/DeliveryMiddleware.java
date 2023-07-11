@@ -12,6 +12,11 @@ public class DeliveryMiddleware {
    * isValidDelivery method.
    */
   public static void isValidDelivery(DeliveryDto delivery) {
+    String receiverName = delivery.getReceiverName();
+    if (receiverName.length() > 32) {
+      throw new WrongInputDataException("Delivery receiver name has more than 32 characters.");
+    }
+
     String address = delivery.getAddress();
     if (address.length() > 100) {
       throw new WrongInputDataException("Delivery address has more than 100 characters.");
@@ -22,18 +27,18 @@ public class DeliveryMiddleware {
       throw new WrongInputDataException("Zip code isn't in default format (12345-123).");
     }
 
+    String latitude = delivery.getLatitude();
+    if (!latitude.matches("[-+]\\d{2}.\\d{6}")) {
+      throw new WrongInputDataException("Latitude isn't in the format.");
+    }
+
     String longitude = delivery.getLongitude();
     if (!longitude.matches("[-+]\\d{2}.\\d{6}")) {
       throw new WrongInputDataException("Longitude isn't in the format.");
     }
 
-    String latitude = delivery.getLatitude();
-    if (!latitude.matches("[-+]\\d{2}.\\d{6}")) {
-      throw new WrongInputDataException("Longitude isn't in the format.");
-    }
-
     Float weightInKg = delivery.getWeightInKg();
-    if (weightInKg >= 12) {
+    if (weightInKg > 12) {
       throw new WrongInputDataException("The weight exceeded the limit (12Kg).");
     }
   }

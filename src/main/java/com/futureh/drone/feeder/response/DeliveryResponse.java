@@ -9,10 +9,11 @@ import com.futureh.drone.feeder.util.DeliveryStatus;
 public class DeliveryResponse {
 
   private Long id;
+  private String receiverName;
   private String address;
   private String zipCode;
-  private String longitude;
   private String latitude;
+  private String longitude;
   private DeliveryStatus status;
   private Float weightInKg;
   private String videoName;
@@ -23,6 +24,14 @@ public class DeliveryResponse {
 
   public void setId(Long id) {
     this.id = id;
+  }
+
+  public String getReceiverName() {
+    return receiverName;
+  }
+
+  public void setReceiverName(String receiverName) {
+    this.receiverName = receiverName;
   }
 
   public String getAddress() {
@@ -41,20 +50,20 @@ public class DeliveryResponse {
     this.zipCode = zipCode;
   }
 
-  public String getLongitude() {
-    return longitude;
-  }
-
-  public void setLongitude(String longitude) {
-    this.longitude = longitude;
-  }
-
   public String getLatitude() {
     return latitude;
   }
 
   public void setLatitude(String latitude) {
     this.latitude = latitude;
+  }
+
+  public String getLongitude() {
+    return longitude;
+  }
+
+  public void setLongitude(String longitude) {
+    this.longitude = longitude;
   }
 
   public DeliveryStatus getStatus() {
@@ -84,10 +93,11 @@ public class DeliveryResponse {
   /**createResponseByDeliveryEntity method.*/
   public void createResponseByDeliveryEntity(Delivery delivery) {
     setId(delivery.getId());
+    setReceiverName(delivery.getReceiverName());
     setAddress(delivery.getAddress());
     setZipCode(delivery.getZipCode());
+    setLatitude(delivery.getLatitude());
     setLongitude(delivery.getLongitude());
-    setLatitude(delivery.getLongitude());
     setStatus(delivery.getStatus());
     setWeightInKg(delivery.getWeightInKg());
 

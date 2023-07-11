@@ -46,13 +46,14 @@ public class DeliveryService {
 
   /** addDelivery method.*/
   public Delivery addDelivery(DeliveryDto delivery) {
+    String receiverName = delivery.getReceiverName();
     String address = delivery.getAddress();
     String zipCode = delivery.getZipCode();
     String longitude = delivery.getLongitude();
     String latitude = delivery.getLatitude();
     Float weightInKg = delivery.getWeightInKg();
     Delivery newDelivery = deliveryRepository.save(
-        new Delivery(address, zipCode, longitude, latitude, weightInKg));
+        new Delivery(receiverName, address, zipCode, longitude, latitude, weightInKg));
 
     return newDelivery;
   }
@@ -67,9 +68,8 @@ public class DeliveryService {
   }
 
   /** saveFile method.*/
-  public String saveFile(String videoName, MultipartFile multipartFile) throws IOException {
+  public void saveFile(String videoName, MultipartFile multipartFile) throws IOException {
     Path uploadDirectory = Paths.get("videos-uploads");
-    String uri = "/drone/downloadVideo/" + videoName;
 
     try {
       InputStream inputStream = multipartFile.getInputStream();
@@ -78,8 +78,6 @@ public class DeliveryService {
     } catch (IOException err) {
       throw new WrongInputDataException(paramWithoutVideo);
     }
-
-    return uri;
   }
 
   /** addVideo method.*/
@@ -143,6 +141,7 @@ public class DeliveryService {
   public Delivery updateDelivery(Long id, DeliveryDto delivery) {
     Delivery deliveryUpdate = deliveryRepository.findById(id).orElse(null);
     if (deliveryUpdate != null) {
+      deliveryUpdate.setReceiverName(delivery.getReceiverName());
       deliveryUpdate.setAddress(delivery.getAddress());
       deliveryUpdate.setZipCode(delivery.getZipCode());
       deliveryUpdate.setLongitude(delivery.getLongitude());
