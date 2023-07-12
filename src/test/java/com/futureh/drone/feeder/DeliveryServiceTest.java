@@ -360,7 +360,7 @@ class DeliveryServiceTest {
     when(deliveryRepository.findById(notExistentId)).thenReturn(Optional.empty());
 
     assertThrows(InputNotFoundException.class,
-        () -> deliveryService.getDeliveryById(notExistentId));
+        () -> deliveryService.removeDelivery(notExistentId));
   }
 
   @Test
@@ -401,8 +401,10 @@ class DeliveryServiceTest {
   public void updateDeliveryWithIdNotFound() throws Exception {
     when(deliveryRepository.findById(notExistentId)).thenReturn(Optional.empty());
 
+    DeliveryDto deliveryDto = new DeliveryDto();
+
     assertThrows(InputNotFoundException.class,
-        () -> deliveryService.getDeliveryById(notExistentId));
+        () -> deliveryService.updateDelivery(dlvIdOk, deliveryDto));
   }
 
   @Test

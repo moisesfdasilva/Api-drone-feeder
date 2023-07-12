@@ -238,8 +238,8 @@ class DeliveryControllerTest {
 
   @Test
   @Order(8)
-  @DisplayName("2.1. A rota POST /delivery/{id}/uploadVideo, com nome do video correto,"
-      + " deve retornar status 200 e body contendo os dados da entrega.")
+  @DisplayName("2.1. A rota POST /delivery/{id}/uploadVideo, com nome do video correto"
+      + " não possuindo um vídeo deve retornar status 200 e body contendo os dados da entrega.")
   public void uploadVideoOk() throws Exception {
     when(deliveryService.getVideoByName(videoNameOk)).thenReturn(null);
 
@@ -371,6 +371,25 @@ class DeliveryControllerTest {
 
   @Test
   @Order(15)
+  @DisplayName("2.8. A rota POST /delivery/{id}/uploadVideo, com nome do video correto"
+      + " possuindo um vídeo deve retornar status XXX0 e body contendo a mensagem de erro.")
+  public void uploadVideoAlreadyWithVideo() throws Exception {
+    Video video = new Video(videoNameOk, videoSizeOk);
+    video.setId(videoIdOk);
+    when(deliveryService.getVideoByName(videoNameOk)).thenReturn(video);
+
+    MockMultipartFile multipartFile = new MockMultipartFile("video", videoNameOk, "video.mp4",
+        "New drone video".getBytes());
+
+    this.mockMvc.perform(
+        multipart("/delivery/" + dlvIdOk + "/uploadVideo").file(multipartFile)
+    ).andExpect(status().isConflict())
+    .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+    .andExpect(jsonPath("$.error", is("The video already exists.")));
+  }
+
+  @Test
+  @Order(16)
   @DisplayName("3. A rota GET /delivery/allVideos, deve retornar status 200 e body contendo a lista"
       + " de videos cadastradas.")
   public void getAllVideos() throws Exception {
@@ -398,7 +417,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(16)
+  @Order(17)
   @DisplayName("4.1. A rota GET /delivery/video/{id}, com o id cadastrado na banco de dados,"
       + " deve retornar status 200 e body contendo os dados do Video.")
   public void getVideoDetailsOk() throws Exception {
@@ -424,7 +443,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(17)
+  @Order(18)
   @DisplayName("4.2. A rota GET /delivery/video/{id}, sem o id cadastrado na banco de dados,"
       + " deve retornar status 404 e body contendo a mensagem de erro.")
   public void getVideoDetailsWithIdNotFound() throws Exception {
@@ -438,7 +457,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(18)
+  @Order(19)
   @DisplayName("5. A rota GET /delivery/all, deve retornar status 200 e body contendo a lista"
       + " de entrgas cadastradas.")
   public void getAllDeliveries() throws Exception {
@@ -478,7 +497,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(19)
+  @Order(20)
   @DisplayName("6.1. A rota GET /delivery/{id}, com o id cadastrado na banco de dados,"
       + " deve retornar status 200 e body contendo os dados da entrega.")
   public void getDeliveryByIdOk() throws Exception {
@@ -513,7 +532,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(20)
+  @Order(21)
   @DisplayName("6.2. A rota GET /delivery/{id}, sem o id cadastrado na banco de dados,"
       + " deve retornar status 404 e body contendo a mensagem de erro.")
   public void getDeliveryByIdWithIdNotFound() throws Exception {
@@ -527,7 +546,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(21)
+  @Order(22)
   @DisplayName("7.1. A rota DELETE /delivery/delete/{id}, com o id cadastrado na banco de dados,"
       + " deve retornar status 200 e body contendo a mensagem que o id foi removido.")
   public void removeDeliveryOk() throws Exception {
@@ -540,7 +559,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(22)
+  @Order(23)
   @DisplayName("7.2. A rota DELETE /delivery/delete/{id}, sem o id cadastrado na banco de dados,"
       + " deve retornar status 404 e body contendo a mensagem de erro.")
   public void removeDeliveryWithIdNotFound() throws Exception {
@@ -554,7 +573,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(23)
+  @Order(24)
   @DisplayName("8.1. A rota PUT /delivery/update/{id}, com nome do remetente, endereço, cep,"
       + "latitude, longitude e peso da entrega corretos, deve retornar status 200 e body contendo"
       + " os dados da entrega.")
@@ -590,7 +609,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(24)
+  @Order(25)
   @DisplayName("8.2. A rota PUT /delivery/update/{id}, com o nome do remetente possuindo mais de 32"
       + " caracteres, deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDeliveryWithInvalidReceiverName() throws Exception {
@@ -605,7 +624,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(25)
+  @Order(26)
   @DisplayName("8.3. A rota PUT /delivery/update/{id}, com o endereço possuindo mais de 100"
       + " caracteres, deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDeliveryWithInvalidAddress() throws Exception {
@@ -621,7 +640,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(26)
+  @Order(27)
   @DisplayName("8.4. A rota PUT /delivery/update/{id}, com o cep em um formato inválido,"
       + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDeliveryWithInvalidZipCode() throws Exception {
@@ -638,7 +657,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(27)
+  @Order(28)
   @DisplayName("8.5. A rota PUT /delivery/update/{id}, com a latitude em um formato inválido,"
       + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDeliveryWithInvalidLatitude() throws Exception {
@@ -656,7 +675,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(28)
+  @Order(29)
   @DisplayName("8.6. A rota PUT /delivery/update/{id}, com a longitude em um formato inválido,"
       + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDeliveryWithInvalidLongitude() throws Exception {
@@ -675,7 +694,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(29)
+  @Order(30)
   @DisplayName("8.7. A rota PUT /delivery/update/{id}, com o peso da entrega acima de 12kg,"
       + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDeliveryWithInvalidWeight() throws Exception {
@@ -695,7 +714,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(30)
+  @Order(31)
   @DisplayName("8.8. A rota PUT /delivery/update/{id}, sem o id cadastrado na banco de dados,"
       + " deve retornar status 404 e body contendo a mensagem de erro.")
   public void updateDeliveryWithIdNotFound() throws Exception {
@@ -718,7 +737,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(31)
+  @Order(32)
   @DisplayName("9.1. A rota GET /delivery/{id}/downloadVideo, com o id cadastrado na banco de dados"
       + " possuindo o video, deve retornar status 200 e body contendo os dados da entrega.")
   public void downloadVideoOk() throws Exception {
@@ -742,7 +761,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(32)
+  @Order(33)
   @DisplayName("9.2. A rota GET /delivery/{id}/downloadVideo, sem o id cadastrado na banco de"
       + " dados, deve retornar status 404 e body contendo a mensagem de erro.")
   public void downloadWithIdNotFound() throws Exception {
@@ -757,7 +776,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(33)
+  @Order(34)
   @DisplayName("9.3. A rota GET /delivery/{id}/downloadVideo, com o id cadastrado na banco de dados"
       + " não possuindo o video, deve retornar status 404 e body contendo a mensagem de erro.")
   public void downloadWithNotExistentVideo() throws Exception {
@@ -775,7 +794,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(34)
+  @Order(35)
   @DisplayName("9.4. A rota GET /delivery/{id}/downloadVideo, com o id cadastrado na banco de dados"
       + " possuindo o video, mas sem o vídeo no diretório videos-upload, deve retornar status 500 e"
       + " body contendo a mensagem de erro.")
@@ -797,7 +816,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(35)
+  @Order(36)
   @DisplayName("9.5. A rota GET /delivery/{id}/downloadVideo, com o id cadastrado na banco de dados"
       + " possuindo o video, mas ocorrendo uma falha ao buscar o vídeo no diretório videos-upload,"
       + " deve retornar status 500 e body contendo a mensagem de erro.")
@@ -819,7 +838,7 @@ class DeliveryControllerTest {
   }
   
   @Test
-  @Order(36)
+  @Order(37)
   @DisplayName("10.1. A rota DELETE /delivery/{id}/deleteVideo, com o id cadastrado na banco de"
       + " dados possuindo o video, deve retornar status 200 e body contendo os dados da entrega"
       + " atualizados.")
@@ -852,7 +871,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(37)
+  @Order(38)
   @DisplayName("10.2. A rota DELETE /delivery/{id}/deleteVideo, com o id cadastrado na banco de"
       + " dados não possuindo o video, deve retornar status 404 e body contendo a mensagem de"
       + " erro.")
@@ -869,7 +888,7 @@ class DeliveryControllerTest {
   }
 
   @Test
-  @Order(38)
+  @Order(39)
   @DisplayName("10.3. A rota DELETE /delivery/{id}/deleteVideo, sem o id cadastrado na banco de"
       + " dados, deve retornar status 404 e body contendo a mensagem de erro.")
   public void deleteVideoWithIdNotFound() throws Exception {
