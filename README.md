@@ -31,17 +31,83 @@ C. Serão iniciados os dois containers:
   1. container docker db, com o banco de dados em MongoDB; e
   2. container docker spring-boot-app, com a aplicação em Java 11 (Spring Boot).
 
-D. Acessar a API, nas seguintes rotas: --------------------------------------------------> AJUSTAR AS ROTAS ABAIXO:
-  1. Post, em http://localhost:3001/cars, contendo o body { "model": string, "year": number, "color": string, "status": boolean, "buyValue": number, "doorsQty": number, "seatsQty": number }, cadastra um novo carro.
-  2. Get, em http://localhost:3001/cars, exibe a lista dos carros cadastrados.
-  3. Get, em http://localhost:3001/cars/:id, exibe os dados do carro conforme o id especificado na rota.
-  4. Put, em http://localhost:3001/cars/:id, contendo o body { "model": string, "year": number, "color": string, "status": boolean, "buyValue": number, "doorsQty": number, "seatsQty": number }, atualiza os dados de um carro cadastrado.
-  5. Delete, em http://localhost:3001/cars/:id, deleta o cadastro do carro conforme o id especificado na rota.  
-  6. Post, em http://localhost:3001/motorcycles, contendo o body { "model": string, "year": number, "color": string, "status": boolean, "buyValue": number, "category": string, "engineCapacity": number }, cadastra uma nova moto.
-  7. Get, em http://localhost:3001/motorcycles, exibe a lista das motos cadastradas.
-  8. Get, em http://localhost:3001/motorcycles/:id, exibe os dados da moto conforme o id especificado na rota.
-  9. Put, em http://localhost:3001/motorcycles/:id, contendo o body { "model": string, "year": number, "color": string, "status": boolean, "buyValue": number, "category": string, "engineCapacity": number }, atualiza os dados de uma moto cadastrada.
-  10. Delete, em http://localhost:3001/motorcycles/:id, deleta o cadastro de uma moto conforme o id especificado na rota.
+D. Acessar as rotas da API a seguir em http://localhost:8080.
+
+### POST /drone/new
+A requisição contendo no body: "name", String possuindo somente letras maiúsculas e números, com 4 caracteres; "model", String com 32 caracteres; e "capacityWeightInKg", Float.
+
+```
+{ 
+	"name": "P306",
+	"model": "DJI Phantom Pro 4",
+	"capacityWeightInKg": 2.72
+}
+```
+
+Retorna status 200 e body com uma instância do drone cadastrado.
+
+```
+{ 
+	"id": 4,
+	"name": "P306",
+	"model": "DJI Phantom Pro 4",
+	"capacityWeightInKg": 2.72
+}
+```
+### GET /drone/all
+Retorna status 200 e body com as instâncias de drones cadastrados.
+
+```
+[
+	...,
+	{ 
+		"id": 4,
+		"name": "P306",
+		"model": "DJI Phantom Pro 4",
+		"capacityWeightInKg": 2.72
+	}
+]
+```
+### GET /drone/{id}
+A requisição contendo um id existente na rota retorna status 200 e body com uma instância do drone cadastrado.
+
+```
+{ 
+	"id": 4,
+	"name": "P306",
+	"model": "DJI Phantom Pro 4",
+	"capacityWeightInKg": 2.72
+}
+```
+### DELETE /drone/delete/{id}
+A requisição contendo um id existente na rota retorna status 200 e body com a mensagem que o drone foi deletado.
+
+```
+{ 
+	"message": "Id 4 has been removed."
+}
+```
+### PUT /drone/update/{id}
+A requisição contendo um id existente na rota e no body: "name", String possuindo somente letras maiúsculas e números, com 4 caracteres; "model", String com até 32  caracteres; e "capacityWeightInKg", Float.
+
+```
+{ 
+	"name": "M307",
+	"model": "DJI Matrice 600 Pro",
+	"capacityWeightInKg": 6.8
+}
+```
+Retorna status 200 e body com uma instância do drone atualizado.
+
+```
+{ 
+	"id": 4,
+	"name": "M307",
+	"model": "DJI Matrice 600 Pro",
+	"capacityWeightInKg": 6.8
+}
+```
+
 
 ## Contribuintes
 |Nome|GitHub|
