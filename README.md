@@ -5,14 +5,14 @@ Aplicação desenvolvida para disponibilizar uma API com funcionalidades de cria
 
 ## Tecnologias e Ferramentas empregadas
 Java 11;
-Spring Boot 2;
+Spring Boot;
 JUnit 5;
 Maven;
 MySQL; e
 Docker.
 
 ## Status do Projeto
-Aplicação em funcionamento, com os testes unitários em funcionamento.
+Aplicação em funcionamento, incluindo os testes unitários.
 
 ## Acesso à Aplicação
 ### Antes da instalação
@@ -21,17 +21,17 @@ Fazer o Clone do repositório.
 ### Instalação e Execução
 A. Entrar no diretório raiz da aplicação:
 
-  $ cd car-shop
+  $ cd Api-drone-feeder
 
 B. Instalar a aplicação pelo Docker Compose, através do comando:
   
   $ docker-compose up -d
 
 C. Serão iniciados os dois containers:
-  1. container docker db, com o banco de dados em MongoDB; e 
-  2. container docker backend, com o backend em Node.js.
+  1. container docker db, com o banco de dados em MongoDB; e
+  2. container docker spring-boot-app, com a aplicação em Java 11 (Spring Boot).
 
-D. Acessar a API, nas seguintes rotas:
+D. Acessar a API, nas seguintes rotas: --------------------------------------------------> AJUSTAR AS ROTAS ABAIXO:
   1. Post, em http://localhost:3001/cars, contendo o body { "model": string, "year": number, "color": string, "status": boolean, "buyValue": number, "doorsQty": number, "seatsQty": number }, cadastra um novo carro.
   2. Get, em http://localhost:3001/cars, exibe a lista dos carros cadastrados.
   3. Get, em http://localhost:3001/cars/:id, exibe os dados do carro conforme o id especificado na rota.
@@ -46,8 +46,7 @@ D. Acessar a API, nas seguintes rotas:
 ## Contribuintes
 |Nome|GitHub|
 | -------- | -------- |
-|Trybe|https://github.com/trybe-tech-ops|
 |Moisés Fernandes|https://github.com/moisesfdasilva|
 
 ## Contato
-[GitHub: Repositório-car-shop](https://github.com/moisesfdasilva/car-shop)
+[GitHub: Repositório-Api-drone-feeder](https://github.com/moisesfdasilva/Api-drone-feeder)

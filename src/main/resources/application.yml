@@ -7,6 +7,6 @@ spring:
     hibernate:
       ddl-auto: create
   datasource:
-    url: jdbc:mysql://localhost:3306/droneFeederDb
-    username: root
+    url: jdbc:mysql://localhost:3306/dronefeeder
+    username: user
     password: pass
