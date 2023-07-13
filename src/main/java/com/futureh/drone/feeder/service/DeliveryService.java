@@ -49,12 +49,11 @@ public class DeliveryService {
     String receiverName = delivery.getReceiverName();
     String address = delivery.getAddress();
     String zipCode = delivery.getZipCode();
-    String longitude = delivery.getLongitude();
     String latitude = delivery.getLatitude();
+    String longitude = delivery.getLongitude();
     Float weightInKg = delivery.getWeightInKg();
     Delivery newDelivery = deliveryRepository.save(
-        new Delivery(receiverName, address, zipCode, longitude, latitude, weightInKg));
-
+        new Delivery(receiverName, address, zipCode, latitude, longitude, weightInKg));
     return newDelivery;
   }
 

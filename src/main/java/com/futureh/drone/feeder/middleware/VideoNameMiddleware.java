@@ -13,10 +13,6 @@ public class VideoNameMiddleware {
    * isValidName method.
    */
   public static void isValidName(String fileName) {
-    if (fileName.isEmpty()) {
-      throw new WrongInputDataException("The param don't have a video (Param must have a video).");
-    }
-
     if (fileName.length() != 26) {
       throw new WrongInputDataException("The video name length isn't 26 characters."
           + " Must be used the standard name (DRON-yyyy-MM-dd-HHmmss.mp4).");

@@ -1,12 +1,26 @@
 version: "3.8"
 
 services:
-  db:
-    platform: linux/x86_64
+  spring-boot-app:
+    build: .
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - database
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://database:3306/dronefeeder
+      SPRING_DATASOURCE_USERNAME: user
+      SPRING_DATASOURCE_PASSWORD: pass
+
+  database:
     image: mysql:8.0.23
+    platform: linux/x86_64
     restart: always
     ports:
       - 3306:3306
     environment:
-      MYSQL_DATABASE: droneFeederDb
+      MYSQL_DATABASE: dronefeeder
+      MYSQL_USER: user
       MYSQL_ROOT_PASSWORD: pass
+      MYSQL_PASSWORD: pass
