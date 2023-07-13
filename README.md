@@ -28,13 +28,13 @@ B. Instalar a aplicação pelo Docker Compose, através do comando:
   $ docker-compose up -d
 
 C. Serão iniciados os dois containers:
-  1. container docker db, com o banco de dados em MongoDB; e
+  1. container docker db, com o banco de dados em MySQL; e
   2. container docker spring-boot-app, com a aplicação em Java 11 (Spring Boot).
 
 D. Acessar as rotas da API a seguir em http://localhost:8080.
 
 ### POST /drone/new
-A requisição contendo no body: "name", String possuindo somente letras maiúsculas e números, com 4 caracteres; "model", String com 32 caracteres; e "capacityWeightInKg", Float.
+A requisição contendo no body: "name", String possuindo somente letras maiúsculas e números, com 4 caracteres; "model", String com até 32 caracteres; e "capacityWeightInKg", Float.
 
 ```
 { 
@@ -107,6 +107,44 @@ Retorna status 200 e body com uma instância do drone atualizado.
 	"capacityWeightInKg": 6.8
 }
 ```
+
+###POST /delivery/new
+A requisição contendo no body: "receiverName", String com até 32 caracteres; "address", String com até 32 caracteres; "zipCode", String no formato padrão de CEP (12345-678); "latitude", no formato padrão de latitude; "longitude", String no formato padrão de longitude; e "weightInKg", Float.
+
+```
+{
+    "receiverName": "Francisco Pereira Passos",
+    "address": "Av. Rio Branco, 63, Centro, Rio de Janeiro, RJ.",
+    "zipCode": "20090-004",
+    "latitude": "-22.901163",
+    "longitude": "-43.178857",
+    "weightInKg": 3.5
+}
+```
+Retorna status 200 e body com uma instância da entrega cadastrada.
+
+```
+{
+    "id": 3,
+    "receiverName": "Francisco Pereira Passos",
+    "address": "Av. Rio Branco, 63, Centro, Rio de Janeiro, RJ.",
+    "zipCode": "20090-004",
+    "latitude": "-22.901163",
+    "longitude": "-43.178857",
+    "status": "TO_DELIVER",
+    "weightInKg": 3.5,
+    "videoName": "None"
+}
+```
+###POST /delivery/{id}/uploadVideo
+###GET /delivery/allVideos
+###GET /delivery/video/{id}
+###GET /delivery/all
+###GET /delivery/{id}
+###DELETE /delivery/delete/{id}
+###PUT /delivery/update/{id}
+###GET /delivery/{id}/downloadVideo
+###DELETE /delivery/{id}/deleteVideo
 
 
 ## Contribuintes
