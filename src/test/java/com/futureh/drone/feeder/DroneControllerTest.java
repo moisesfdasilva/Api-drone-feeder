@@ -77,7 +77,7 @@ class DroneControllerTest {
 
     this.mockMvc.perform(post("/drone/new")
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
-    ).andExpect(status().isOk())
+    ).andExpect(status().isCreated())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
     .andExpect(jsonPath("$.id", is(droneToReturn.getId().intValue())))
     .andExpect(jsonPath("$.name", is(droneToReturn.getName())))
