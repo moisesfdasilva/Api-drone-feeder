@@ -43,19 +43,35 @@ class DroneControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
+  private Long drnIdOk = 1L;
+  private String drnNameOk = "BR01";
+  private String drnModelOk = "Embraer XYZ 777";
+  private Float drnCpWeightOk = 10.5f;
+
+  private Long drnIdOkToo = 2L;
+  private String drnNameOkToo = "BR02";
+  private String drnModelOkToo = "Embraer XYZ 787";
+  private Float drnCpWeightOkToo = 11.6f;
+
+  private String drnNameLonger = "BR001";
+  private String drnNameShorter = "BR1";
+  private String drnNameLowerCase = "br01";
+  private String drnNameNonWordCharacter = "!BR1";
+  private String drnModelLonger = "Embraer XYZ 777-00000000000000000";
+
   @Test
   @Order(1)
   @DisplayName("1.1. A rota POST /drone/new, com nome, modelo e capacidade do Drone corretos,"
       + " deve retornar status 200 e body contendo os dados do Drone.")
   public void postDroneOk() throws Exception {
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName("BR01");
-    droneToPost.setModel("Embraer XYZ 777");
-    droneToPost.setCapacityWeightInKg(10.5f);
+    droneToPost.setName(drnNameOk);
+    droneToPost.setModel(drnModelOk);
+    droneToPost.setCapacityWeightInKg(drnCpWeightOk);
 
     Drone droneToReturn = new Drone(droneToPost.getName(), droneToPost.getModel(),
         droneToPost.getCapacityWeightInKg());
-    droneToReturn.setId(1L);
+    droneToReturn.setId(drnIdOk);
 
     when(droneService.addDrone(any(DroneDto.class))).thenReturn(droneToReturn);
 
@@ -76,11 +92,8 @@ class DroneControllerTest {
   @DisplayName("1.2. A rota POST /drone/new, com o nome do Drone possuindo mais que 4 caracteres,"
       + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void postDroneWithNameLongerThanDefault() throws Exception {
-    String incorrectDroneName = "BR001";
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName(incorrectDroneName);
-    droneToPost.setModel("Embraer XYZ 777");
-    droneToPost.setCapacityWeightInKg(10.5f);
+    droneToPost.setName(drnNameLonger);
 
     this.mockMvc.perform(post("/drone/new")
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
@@ -94,11 +107,8 @@ class DroneControllerTest {
   @DisplayName("1.3. A rota POST /drone/new, com o nome do Drone possuindo menos que 4 caracteres,"
       + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void postDroneWithNameShorterThanDefault() throws Exception {
-    String incorrectDroneName = "BR1";
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName(incorrectDroneName);
-    droneToPost.setModel("Embraer XYZ 777");
-    droneToPost.setCapacityWeightInKg(10.5f);
+    droneToPost.setName(drnNameShorter);
 
     this.mockMvc.perform(post("/drone/new")
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
@@ -112,11 +122,8 @@ class DroneControllerTest {
   @DisplayName("1.4. A rota POST /drone/new, com o nome do Drone possuindo letras minúsculas,"
       + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void postDroneWithLowerCaseName() throws Exception {
-    String incorrectDroneName = "br01";
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName(incorrectDroneName);
-    droneToPost.setModel("Embraer XYZ 777");
-    droneToPost.setCapacityWeightInKg(10.5f);
+    droneToPost.setName(drnNameLowerCase);
 
     this.mockMvc.perform(post("/drone/new")
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
@@ -130,11 +137,8 @@ class DroneControllerTest {
   @DisplayName("1.5. A rota POST /drone/new, com o nome do Drone possuindo caracteres especiais,"
       + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void postDroneWithNonWordCharacterName() throws Exception {
-    String incorrectDroneName = "!BR1";
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName(incorrectDroneName);
-    droneToPost.setModel("Embraer XYZ 777");
-    droneToPost.setCapacityWeightInKg(10.5f);
+    droneToPost.setName(drnNameNonWordCharacter);
 
     this.mockMvc.perform(post("/drone/new")
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
@@ -148,11 +152,9 @@ class DroneControllerTest {
   @DisplayName("1.6. A rota POST /drone/new, com o nome do modelo do Drone possuindo mais que 32"
       + " caracteres, deve retornar status 400 e body contendo a mensagem de erro.")
   public void postDroneWithIncorrectModelName() throws Exception {
-    String incorrectModelName = "Embraer XYZ 777-00000000000000000";
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName("BR01");
-    droneToPost.setModel(incorrectModelName);
-    droneToPost.setCapacityWeightInKg(10.5f);
+    droneToPost.setName(drnNameOk);
+    droneToPost.setModel(drnModelLonger);
 
     this.mockMvc.perform(post("/drone/new")
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
@@ -167,8 +169,8 @@ class DroneControllerTest {
       + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void postDroneWithoutWeightCapacityInKg() throws Exception {
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName("BR01");
-    droneToPost.setModel("Embraer XYZ 777");
+    droneToPost.setName(drnNameOk);
+    droneToPost.setModel(drnModelOk);
     droneToPost.setCapacityWeightInKg(null);
 
     this.mockMvc.perform(post("/drone/new")
@@ -183,10 +185,10 @@ class DroneControllerTest {
   @DisplayName("2. A rota GET /drone/all deve retornar status 200 e body contendo a lista de Drones"
       + " cadastrados.")
   public void getAllDrones() throws Exception {
-    Drone droneA = new Drone("BR01", "Embraer XYZ 777", 10.5f);
-    droneA.setId(1L);
-    Drone droneB = new Drone("BR02", "Embraer XYZ 787", 11.6f);
-    droneB.setId(2L);
+    Drone droneA = new Drone(drnNameOk, drnModelOk, drnCpWeightOk);
+    droneA.setId(drnIdOk);
+    Drone droneB = new Drone(drnNameOkToo, drnModelOkToo, drnCpWeightOkToo);
+    droneB.setId(drnIdOkToo);
     List<Drone> dronesToReturn = new ArrayList<Drone>();
     dronesToReturn.add(droneA);
     dronesToReturn.add(droneB);
@@ -216,13 +218,12 @@ class DroneControllerTest {
   @DisplayName("3.1. A rota GET /drone/{id}, com o id cadastrado na banco de dados,"
       + " deve retornar status 200 e body contendo os dados do Drone.")
   public void getDroneByIdOk() throws Exception {
-    Long paramId = 1L;
-    Drone droneToReturn = new Drone("BR01", "Embraer XYZ 777", 10.5f);
-    droneToReturn.setId(paramId);
+    Drone droneToReturn = new Drone(drnNameOk, drnModelOk, drnCpWeightOk);
+    droneToReturn.setId(drnIdOk);
 
-    when(droneService.getDroneById(paramId)).thenReturn(droneToReturn);
+    when(droneService.getDroneById(drnIdOk)).thenReturn(droneToReturn);
 
-    this.mockMvc.perform(get("/drone/" + paramId))
+    this.mockMvc.perform(get("/drone/" + drnIdOk))
       .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.id", is(droneToReturn.getId().intValue())))
@@ -238,12 +239,10 @@ class DroneControllerTest {
   @DisplayName("3.2. A rota GET /drone/{id}, sem o id cadastrado na banco de dados,"
       + " deve retornar status 404 e body contendo a mensagem de erro.")
   public void getDroneByIdNotFound() throws Exception {
-    Long paramId = 1L;
-
-    when(droneService.getDroneById(paramId)).thenThrow(
+    when(droneService.getDroneById(drnIdOk)).thenThrow(
         new InputNotFoundException("Drone id not found."));
 
-    this.mockMvc.perform(get("/drone/" + paramId))
+    this.mockMvc.perform(get("/drone/" + drnIdOk))
       .andExpect(status().isNotFound())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.error", is("Drone id not found.")));
@@ -254,14 +253,12 @@ class DroneControllerTest {
   @DisplayName("4.1. A rota DELETE /drone/delete/{id}, com o id cadastrado na banco de dados,"
       + " deve retornar status 200 e body contendo a mensagem que o id foi removido.")
   public void deleteDroneOk() throws Exception {
-    Long paramId = 1L;
+    when(droneService.removeDrone(drnIdOk)).thenReturn(drnIdOk);
 
-    when(droneService.removeDrone(paramId)).thenReturn(paramId);
-
-    this.mockMvc.perform(delete("/drone/delete/" + paramId))
+    this.mockMvc.perform(delete("/drone/delete/" + drnIdOk))
       .andExpect(status().isOk())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-        .andExpect(jsonPath("$.message", is("Id " + paramId + " has been removed.")));
+        .andExpect(jsonPath("$.message", is("Id " + drnIdOk + " has been removed.")));
   }
 
   @Test
@@ -269,12 +266,10 @@ class DroneControllerTest {
   @DisplayName("4.2. A rota DELETE /drone/delete/{id}, sem o id cadastrado na banco de dados,"
       + " deve retornar status 404 e body contendo a mensagem de erro.")
   public void deleteDroneWithIdNotFound() throws Exception {
-    Long paramId = 1L;
-
-    when(droneService.removeDrone(paramId)).thenThrow(
+    when(droneService.removeDrone(drnIdOk)).thenThrow(
         new InputNotFoundException("Drone id not found."));
 
-    this.mockMvc.perform(delete("/drone/delete/" + paramId))
+    this.mockMvc.perform(delete("/drone/delete/" + drnIdOk))
       .andExpect(status().isNotFound())
         .andExpect(content().contentType(MediaType.APPLICATION_JSON))
         .andExpect(jsonPath("$.error", is("Drone id not found.")));
@@ -286,18 +281,17 @@ class DroneControllerTest {
       + " corretos, deve retornar status 200 e body contendo os dados atualizados do Drone.")
   public void updateDroneOk() throws Exception {
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName("BR02");
-    droneToPost.setModel("Embraer XYZ 787");
-    droneToPost.setCapacityWeightInKg(11.6f);
-    Long paramId = 1L;
+    droneToPost.setName(drnNameOkToo);
+    droneToPost.setModel(drnModelOkToo);
+    droneToPost.setCapacityWeightInKg(drnCpWeightOkToo);
 
     Drone droneToReturn = new Drone(
         droneToPost.getName(), droneToPost.getModel(), droneToPost.getCapacityWeightInKg());
-    droneToReturn.setId(paramId);
+    droneToReturn.setId(drnIdOk);
 
     when(droneService.updateDrone(any(Long.class), any(DroneDto.class))).thenReturn(droneToReturn);
 
-    this.mockMvc.perform(put("/drone/update/" + paramId)
+    this.mockMvc.perform(put("/drone/update/" + drnIdOk)
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
         ).andExpect(status().isOk())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -314,15 +308,10 @@ class DroneControllerTest {
   @DisplayName("5.2. A rota PUT /drone/update/{id}, com o nome do Drone possuindo mais que 4"
       + " caracteres, deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDroneWithNameLongerThanDefault() throws Exception {
-    String incorrectDroneName = "BR002";
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName(incorrectDroneName);
-    droneToPost.setModel("Embraer XYZ 787");
-    droneToPost.setCapacityWeightInKg(11.6f);
+    droneToPost.setName(drnNameLonger);
 
-    Long paramId = 1L;
-
-    this.mockMvc.perform(put("/drone/update/" + paramId)
+    this.mockMvc.perform(put("/drone/update/" + drnIdOk)
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
         ).andExpect(status().isBadRequest())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -334,15 +323,10 @@ class DroneControllerTest {
   @DisplayName("5.3. A rota PUT /drone/update/{id}, com o nome do Drone possuindo menos que 4"
       + " caracteres, deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDroneWithNameShorterThanDefault() throws Exception {
-    String incorrectDroneName = "BR2";
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName(incorrectDroneName);
-    droneToPost.setModel("Embraer XYZ 787");
-    droneToPost.setCapacityWeightInKg(11.6f);
+    droneToPost.setName(drnNameShorter);
 
-    Long paramId = 1L;
-
-    this.mockMvc.perform(put("/drone/update/" + paramId)
+    this.mockMvc.perform(put("/drone/update/" + drnIdOk)
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
         ).andExpect(status().isBadRequest())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -354,15 +338,10 @@ class DroneControllerTest {
   @DisplayName("5.4. A rota PUT /drone/update/{id}, com o nome do Drone possuindo letras"
       + " minúsculas, deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDroneWithLowerCaseName() throws Exception {
-    String incorrectDroneName = "br02";
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName(incorrectDroneName);
-    droneToPost.setModel("Embraer XYZ 787");
-    droneToPost.setCapacityWeightInKg(11.6f);
+    droneToPost.setName(drnNameLowerCase);
 
-    Long paramId = 1L;
-
-    this.mockMvc.perform(put("/drone/update/" + paramId)
+    this.mockMvc.perform(put("/drone/update/" + drnIdOk)
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
         ).andExpect(status().isBadRequest())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -374,15 +353,10 @@ class DroneControllerTest {
   @DisplayName("5.5. A rota PUT /drone/update/{id}, com o nome do Drone possuindo caracteres"
       + " especiais, deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDroneWithNonWordCharacterName() throws Exception {
-    String incorrectDroneName = "!BR2";
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName(incorrectDroneName);
-    droneToPost.setModel("Embraer XYZ 787");
-    droneToPost.setCapacityWeightInKg(11.6f);
+    droneToPost.setName(drnNameNonWordCharacter);
 
-    Long paramId = 1L;
-
-    this.mockMvc.perform(put("/drone/update/" + paramId)
+    this.mockMvc.perform(put("/drone/update/" + drnIdOk)
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
         ).andExpect(status().isBadRequest())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -394,15 +368,11 @@ class DroneControllerTest {
   @DisplayName("5.6. A rota PUT /drone/update/{id}, com o nome do modelo do Drone possuindo mais"
       + " que 32 caracteres, deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDroneWithIncorrectModelName() throws Exception {
-    String incorrectModelName = "Embraer XYZ 787-00000000000000000";
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName("BR02");
-    droneToPost.setModel(incorrectModelName);
-    droneToPost.setCapacityWeightInKg(11.6f);
+    droneToPost.setName(drnNameOk);
+    droneToPost.setModel(drnModelLonger);
 
-    Long paramId = 1L;
-
-    this.mockMvc.perform(put("/drone/update/" + paramId)
+    this.mockMvc.perform(put("/drone/update/" + drnIdOk)
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
         ).andExpect(status().isBadRequest())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -415,13 +385,11 @@ class DroneControllerTest {
       + " deve retornar status 400 e body contendo a mensagem de erro.")
   public void updateDroneWithoutWeightCapacityInKg() throws Exception {
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName("BR02");
-    droneToPost.setModel("Embraer XYZ 787");
+    droneToPost.setName(drnNameOk);
+    droneToPost.setModel(drnModelOk);
     droneToPost.setCapacityWeightInKg(null);
 
-    Long paramId = 1L;
-
-    this.mockMvc.perform(put("/drone/update/" + paramId)
+    this.mockMvc.perform(put("/drone/update/" + drnIdOk)
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
         ).andExpect(status().isBadRequest())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -434,15 +402,14 @@ class DroneControllerTest {
       + " deve retornar status 404 e body contendo a mensagem de erro.")
   public void updateDroneWithIdNotFound() throws Exception {
     DroneDto droneToPost = new DroneDto();
-    droneToPost.setName("BR02");
-    droneToPost.setModel("Embraer XYZ 787");
-    droneToPost.setCapacityWeightInKg(11.6f);
-    Long paramId = 1L;
+    droneToPost.setName(drnNameOkToo);
+    droneToPost.setModel(drnModelOkToo);
+    droneToPost.setCapacityWeightInKg(drnCpWeightOkToo);
 
     when(droneService.updateDrone(any(Long.class), any(DroneDto.class))).thenThrow(
         new InputNotFoundException("Drone id not found."));
 
-    this.mockMvc.perform(put("/drone/update/" + paramId)
+    this.mockMvc.perform(put("/drone/update/" + drnIdOk)
         .contentType(MediaType.APPLICATION_JSON).content(asJsonString(droneToPost))
         ).andExpect(status().isNotFound())
     .andExpect(content().contentType(MediaType.APPLICATION_JSON))

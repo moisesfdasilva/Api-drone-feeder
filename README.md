@@ -137,6 +137,8 @@ Retorna status 200 e body com uma instância da entrega cadastrada.
 }
 ```
 ###POST /delivery/{id}/uploadVideo
+A requisição contendo no body um arquivo "video" dentro dos padrões estabelecidos.
+
 ###GET /delivery/allVideos
 ###GET /delivery/video/{id}
 ###GET /delivery/all
