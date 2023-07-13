@@ -31,9 +31,9 @@ C. Serão iniciados os dois containers:
   1. container docker db, com o banco de dados em MySQL; e
   2. container docker spring-boot-app, com a aplicação em Java 11 (Spring Boot).
 
-D. Acessar as rotas da API a seguir em http://localhost:8080.
+D. Acessar as rotas abaixo (em http://localhost:8080):
 
-### POST /drone/new
+#### POST /drone/new
 A requisição contendo no body: "name", String possuindo somente letras maiúsculas e números, com 4 caracteres; "model", String com até 32 caracteres; e "capacityWeightInKg", Float.
 
 ```
@@ -54,7 +54,7 @@ Retorna status 201 e body com a instância do drone cadastrado.
   "capacityWeightInKg": 2.72
 }
 ```
-### GET /drone/all
+#### GET /drone/all
 Retorna status 200 e body com as instâncias dos drones cadastrados.
 
 ```
@@ -68,7 +68,7 @@ Retorna status 200 e body com as instâncias dos drones cadastrados.
   }
 ]
 ```
-### GET /drone/{id}
+#### GET /drone/{id}
 A requisição contendo um id existente na rota retorna status 200 e body a instância do drone cadastrado.
 
 ```
@@ -79,7 +79,7 @@ A requisição contendo um id existente na rota retorna status 200 e body a inst
   "capacityWeightInKg": 2.72
 }
 ```
-### DELETE /drone/delete/{id}
+#### DELETE /drone/delete/{id}
 A requisição contendo um id existente na rota retorna status 200 e body a mensagem que o drone foi deletado.
 
 ```
@@ -87,7 +87,7 @@ A requisição contendo um id existente na rota retorna status 200 e body a mens
   "message": "Id 4 has been removed."
 }
 ```
-### PUT /drone/update/{id}
+#### PUT /drone/update/{id}
 A requisição contendo um id existente na rota e no body: "name", String possuindo somente letras maiúsculas e números, com 4 caracteres; "model", String com até 32  caracteres; e "capacityWeightInKg", Float.
 
 ```
@@ -108,7 +108,7 @@ Retorna status 200 e body com a instância do drone atualizado.
 }
 ```
 
-###POST /delivery/new
+#### POST /delivery/new
 A requisição contendo no body: "receiverName", String com até 32 caracteres; "address", String com até 32 caracteres; "zipCode", String no formato padrão de CEP (12345-678); "latitude", no formato padrão de latitude; "longitude", String no formato padrão de longitude; e "weightInKg", Float.
 
 ```
@@ -136,7 +136,7 @@ Retorna status 201 e body com a instância da entrega cadastrada.
   "videoName": "None"
 }
 ```
-###POST /delivery/{id}/uploadVideo
+#### POST /delivery/{id}/uploadVideo
 A requisição contendo no body um arquivo "video", dentro dos padrões estabelecidos, retorna status 201 e body com a instância da entrega atualizada.
 
 ```
@@ -152,7 +152,7 @@ A requisição contendo no body um arquivo "video", dentro dos padrões estabele
   "videoName": "A011-2013-03-14-101033.mp4"
 }
 ```
-###GET /delivery/allVideos
+#### GET /delivery/allVideos
 Retorna status 200 e body com as instâncias dos vídeos cadastrados.
 
 ```
@@ -166,7 +166,7 @@ Retorna status 200 e body com as instâncias dos vídeos cadastrados.
   }
 ]
 ```
-###GET /delivery/video/{id}
+#### GET /delivery/video/{id}
 A requisição contendo um id de um vídeo existente na rota retorna status 200 e body com a instância do vídeo cadastrado.
 
 ```
@@ -182,7 +182,7 @@ A requisição contendo um id de um vídeo existente na rota retorna status 200 
   }
 }
 ```
-###GET /delivery/all
+#### GET /delivery/all
 Retorna status 200 e body com as instâncias das entregas cadastradas.
 
 ```
@@ -201,7 +201,7 @@ Retorna status 200 e body com as instâncias das entregas cadastradas.
   }
 ]
 ```
-###GET /delivery/{id}
+#### GET /delivery/{id}
 A requisição contendo um id vídeo existente na rota retorna status 200 e body com a instância da entrega cadastrada.
 
 ```
@@ -222,7 +222,7 @@ A requisição contendo um id vídeo existente na rota retorna status 200 e body
   }
 }
 ```
-###DELETE /delivery/delete/{id}
+#### DELETE /delivery/delete/{id}
 A requisição contendo um id existente na rota retorna status 200 e body com a mensagem que a entrega foi deletada.
 
 ```
@@ -230,7 +230,7 @@ A requisição contendo um id existente na rota retorna status 200 e body com a 
   "message": "Delivery id 2 has been removed."
 }
 ```
-###PUT /delivery/update/{id}
+#### PUT /delivery/update/{id}
 A requisição contendo um id existente na rota e no body: "receiverName", String com até 32 caracteres; "address", String com até 32 caracteres; "zipCode", String no formato padrão de CEP (12345-678); "latitude", no formato padrão de latitude; "longitude", String no formato padrão de longitude; e "weightInKg", Float.
 
 ```
@@ -258,11 +258,12 @@ Retorna status 200 e body com a instância da entrega atualizado.
   "videoName": "None"
 }
 ```
-###GET /delivery/{id}/downloadVideo
+#### GET /delivery/{id}/downloadVideo
 A requisição contendo um id da entrega existente na rota, a qual possui um vídeo, retorna status 200 e body com o arquivo do vídeo da referida entrega.
-	+ Save response to file: A011-2013-03-14-101033.mp4.
 
-###DELETE /delivery/{id}/deleteVideo
++ **Save response to file**: A011-2013-03-14-101033.mp4.
+
+#### DELETE /delivery/{id}/deleteVideo
 A requisição contendo um id da entrega existente na rota, a qual possui um vídeo, retorna status 200 e body com a instância da entrega atualizado.
 
 ```
