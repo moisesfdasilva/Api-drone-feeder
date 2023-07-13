@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -39,7 +40,7 @@ public class DroneController {
     DroneResponse newDroneResponse = new DroneResponse();
     newDroneResponse.createResponseByDroneEntity(newDrone);
 
-    return ResponseEntity.ok(newDroneResponse);
+    return ResponseEntity.status(HttpStatus.CREATED).body(newDroneResponse);
   }
 
   /** getAllDrones method.*/
