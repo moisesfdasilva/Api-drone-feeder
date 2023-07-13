@@ -1,5 +1,11 @@
-FROM openjdk:11
+FROM maven:3.8-jdk-11
 
-COPY target/*.jar app.jar
+RUN mkdir /project
 
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+COPY . /project
+
+WORKDIR /project
+
+RUN mvn clean package -DskipTests
+
+CMD ["java", "-jar", "target/drone.feeder-0.0.1-SNAPSHOT.jar"]
